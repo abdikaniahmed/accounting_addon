@@ -1,0 +1,73 @@
+{
+  "name": "Accounting System",
+  "addon_identifier": "accounting",
+  "version": "1.2.0",
+  "required_cms_version": "132",
+  "addon_banner": "images/addons/accounting.png",
+
+  "directories": [
+    "public/addons",
+    "public/images/addons",
+    "app/Http/Controllers/Admin/Addons",
+    "app/Repositories/Admin/Addon",
+    "app/Repositories/Interfaces/Admin/Addon",
+    "app/Models/Accounting",
+    "resources/views/addons/accounting",
+    "routes"
+  ],
+
+  "sql_files": [
+    "database/install.sql"
+  ],
+
+  "files": [
+    {
+      "from_directory": "images/accounting.png",
+      "to_directory": "public/images/addons/accounting.png"
+    },
+    {
+      "from_directory": "files/ChartOfAccountController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/ChartOfAccountController.php"
+    },
+    {
+      "from_directory": "files/JournalEntryController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/JournalEntryController.php"
+    },
+    {
+      "from_directory": "files/AccountingRepository.php",
+      "to_directory": "app/Repositories/Admin/Addon/AccountingRepository.php"
+    },
+    {
+      "from_directory": "files/AccountingInterface.php",
+      "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
+    },
+    {
+      "from_directory": "files/Account.php",
+      "to_directory": "app/Models/Accounting/Account.php"
+    },
+    {
+      "from_directory": "files/JournalEntry.php",
+      "to_directory": "app/Models/Accounting/JournalEntry.php"
+    },
+    {
+      "from_directory": "files/JournalItem.php",
+      "to_directory": "app/Models/Accounting/JournalItem.php"
+    },
+    {
+      "from_directory": "files/view_journals.blade.php",
+      "to_directory": "resources/views/addons/accounting/journals.blade.php"
+    },
+    {
+      "from_directory": "files/chart_of_accounts.blade.php",
+      "to_directory": "resources/views/addons/accounting/chart_of_accounts.blade.php"
+    },
+    {
+      "from_directory": "files/account_form.blade.php",
+      "to_directory": "resources/views/addons/accounting/account_form.blade.php"
+    },
+    {
+      "from_directory": "routes/accounting-system.php",
+      "to_directory": "routes/accounting-system.php"
+    }
+  ]
+}
