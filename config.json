@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
-  "addon_identifier": "accounting",
-  "version": "1.2.0",
+  "addon_identifier": "accounting_addon",
+  "version": "1.3.0",
   "required_cms_version": "132",
   "addon_banner": "images/addons/accounting.png",
 
@@ -26,43 +26,43 @@
       "to_directory": "public/images/addons/accounting.png"
     },
     {
-      "from_directory": "files/ChartOfAccountController.php",
+      "from_directory": "app/Controllers/Admin/ChartOfAccountController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/ChartOfAccountController.php"
     },
     {
-      "from_directory": "files/JournalEntryController.php",
+      "from_directory": "app/Controllers/Admin/JournalEntryController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/JournalEntryController.php"
     },
     {
-      "from_directory": "files/AccountingRepository.php",
+      "from_directory": "app/Repositories/AccountingRepository.php",
       "to_directory": "app/Repositories/Admin/Addon/AccountingRepository.php"
     },
     {
-      "from_directory": "files/AccountingInterface.php",
+      "from_directory": "app/Repositories/AccountingInterface.php",
       "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
     },
     {
-      "from_directory": "files/Account.php",
+      "from_directory": "app/Models/Account.php",
       "to_directory": "app/Models/Accounting/Account.php"
     },
     {
-      "from_directory": "files/JournalEntry.php",
+      "from_directory": "app/Models/JournalEntry.php",
       "to_directory": "app/Models/Accounting/JournalEntry.php"
     },
     {
-      "from_directory": "files/JournalItem.php",
+      "from_directory": "app/Models/JournalItem.php",
       "to_directory": "app/Models/Accounting/JournalItem.php"
     },
     {
-      "from_directory": "files/view_journals.blade.php",
+      "from_directory": "View/Admin/view_journals.blade.php",
       "to_directory": "resources/views/addons/accounting/journals.blade.php"
     },
     {
-      "from_directory": "files/chart_of_accounts.blade.php",
+      "from_directory": "View/Admin/chart_of_accounts.blade.php",
       "to_directory": "resources/views/addons/accounting/chart_of_accounts.blade.php"
     },
     {
-      "from_directory": "files/account_form.blade.php",
+      "from_directory": "View/Admin/account_form.blade.php",
       "to_directory": "resources/views/addons/accounting/account_form.blade.php"
     },
     {
