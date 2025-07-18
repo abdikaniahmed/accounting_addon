@@ -56,6 +56,14 @@
     {
       "from_directory": "View/Admin/view_journals.blade.php",
       "to_directory": "resources/views/addons/accounting/journals.blade.php"
+    }, 
+    {
+      "from_directory": "View/Admin/journal_form.blade.php",
+      "to_directory": "resources/views/addons/accounting/journal_form.blade.php"
+    },  
+    {
+      "from_directory": "View/Admin/journal_show.blade.php",
+      "to_directory": "resources/views/addons/accounting/journal_show.blade.php"
     },
     {
       "from_directory": "View/Admin/chart_of_accounts.blade.php",

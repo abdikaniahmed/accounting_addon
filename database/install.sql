@@ -1,6 +1,8 @@
 -- database/install.sql
 -- install.sql
 
+-- database/install.sql
+
 CREATE TABLE IF NOT EXISTS `acc_accounts` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,
@@ -13,7 +15,9 @@ CREATE TABLE IF NOT EXISTS `acc_accounts` (
 
 CREATE TABLE IF NOT EXISTS `acc_journal_entries` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `journal_number` VARCHAR(20) NOT NULL UNIQUE,
   `date` DATE NOT NULL,
+  `reference` VARCHAR(255),
   `description` TEXT,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL

@@ -12,17 +12,16 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
 
         Route::middleware(['adminCheck','loginCheck'])->prefix('admin/accounting')->group(function () {
 
-            Route::get('/journals', [JournalEntryController::class, 'index'])
-                ->name('admin.accounting.journals');
+            // Journal Entries
+            Route::get('/journals', [JournalEntryController::class, 'index'])->name('admin.accounting.journals');
+            Route::get('/journals/create', [JournalEntryController::class, 'create'])->name('admin.accounting.journals.create');
+            Route::post('/journals', [JournalEntryController::class, 'store'])->name('admin.accounting.journals.store');
+            Route::get('/journals/{id}', [JournalEntryController::class, 'show'])->name('admin.accounting.journals.show');
 
-            Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])
-                ->name('admin.accounting.coa');
-
-            Route::get('/chart-of-accounts/create', [ChartOfAccountController::class, 'create'])
-                ->name('admin.accounting.coa.create');
-
-            Route::post('/chart-of-accounts/store', [ChartOfAccountController::class, 'store'])
-                ->name('admin.accounting.coa.store');
+            // Chart of Accounts
+            Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('admin.accounting.coa');
+            Route::get('/chart-of-accounts/create', [ChartOfAccountController::class, 'create'])->name('admin.accounting.coa.create');
+            Route::post('/chart-of-accounts/store', [ChartOfAccountController::class, 'store'])->name('admin.accounting.coa.store');
         });
     });
 });
