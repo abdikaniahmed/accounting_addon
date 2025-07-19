@@ -17,6 +17,9 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/journals/create', [JournalEntryController::class, 'create'])->name('admin.accounting.journals.create');
             Route::post('/journals', [JournalEntryController::class, 'store'])->name('admin.accounting.journals.store');
             Route::get('/journals/{id}', [JournalEntryController::class, 'show'])->name('admin.accounting.journals.show');
+            Route::get('/journals/{id}/edit', [JournalEntryController::class, 'edit'])->name('admin.accounting.journals.edit');
+            Route::delete('/journals/{id}', [JournalEntryController::class, 'destroy'])->name('admin.accounting.journals.destroy');
+            Route::put('admin/accounting/journals/{id}', [JournalEntryController::class, 'update'])->name('admin.accounting.journals.update');
 
             // Chart of Accounts
             Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('admin.accounting.coa');

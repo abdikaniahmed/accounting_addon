@@ -6,36 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class JournalItem extends Model
 {
-    /** @var string  */
-    protected $table = 'acc_journal_items';      // ← matches install.sql
+    protected $table = 'acc_journal_items';
 
-    /** @var bool */
-    public $timestamps = true;                   // created_at / updated_at
-
-    /** @var array  */
     protected $fillable = [
         'journal_entry_id',
         'account_id',
-        'type',          // 'debit' or 'credit'
+        'type',
         'amount',
+        'description'
     ];
 
-    /* -----------------------------------------------------------------
-     |  Relationships
-     | -----------------------------------------------------------------
-     */
+    public $timestamps = true;
 
-    /**
-     * Each item belongs to one journal entry.
-     */
     public function entry()
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
     }
 
-    /**
-     * Each item touches one account.
-     */
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id');
