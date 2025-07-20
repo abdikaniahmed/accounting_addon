@@ -15,15 +15,16 @@ class JournalEntry extends Model
         'description',
     ];
 
-    public $timestamps = true;
-
     protected $casts = [
         'date' => 'date',
     ];
 
-    // Eager load by default
+    public $timestamps = true;
+
+    // Eager load items and related accounts
     protected $with = ['items.account'];
 
+    // One entry has many journal items
     public function items()
     {
         return $this->hasMany(JournalItem::class, 'journal_entry_id');

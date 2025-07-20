@@ -13,16 +13,18 @@ class JournalItem extends Model
         'account_id',
         'type',
         'amount',
-        'description'
+        'description',
     ];
 
     public $timestamps = true;
 
-    public function entry()
+    // Belongs to a Journal Entry
+    public function journalEntry()
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
     }
 
+    // Belongs to an Account
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id');

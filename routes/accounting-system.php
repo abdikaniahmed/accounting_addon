@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Addons\JournalEntryController;
 use App\Http\Controllers\Admin\Addons\ChartOfAccountController;
+use App\Http\Controllers\Admin\Addons\LedgerController;
+
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -25,6 +27,10 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('admin.accounting.coa');
             Route::get('/chart-of-accounts/create', [ChartOfAccountController::class, 'create'])->name('admin.accounting.coa.create');
             Route::post('/chart-of-accounts/store', [ChartOfAccountController::class, 'store'])->name('admin.accounting.coa.store');
+           
+            // Ledger Summary Route
+            Route::get('/ledger', [LedgerController::class, 'index'])->name('admin.accounting.ledger');
+
         });
     });
 });

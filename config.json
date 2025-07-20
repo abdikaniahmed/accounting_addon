@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "required_cms_version": "132",
   "addon_banner": "images/addons/accounting.png",
 
@@ -32,6 +32,10 @@
     {
       "from_directory": "app/Controllers/Admin/JournalEntryController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/JournalEntryController.php"
+    },
+    {
+      "from_directory": "app/Controllers/Admin/LedgerController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/LedgerController.php"
     },
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
@@ -72,6 +76,10 @@
     {
       "from_directory": "View/Admin/account_form.blade.php",
       "to_directory": "resources/views/addons/accounting/account_form.blade.php"
+    },
+     {
+      "from_directory": "View/Admin/ledger_summary.blade.php",
+      "to_directory": "resources/views/addons/accounting/ledger_summary.blade.php"
     },
     {
       "from_directory": "routes/accounting-system.php",
