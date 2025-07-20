@@ -7,13 +7,18 @@ use App\Models\Accounting\JournalEntry;
 use App\Models\Accounting\JournalItem;
 use App\Models\Accounting\Account;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class JournalEntryController extends Controller
 {
     public function index()
     {
-        $entries = JournalEntry::with('items.account')->latest()->get();
+        // Cache journal entries for 30 minutes
+        $entries = Cache::remember('accounting.journal_entries', 30 * 60, function () {
+            return JournalEntry::with('items.account')->latest()->get();
+        });
+
         return view('addons.accounting.view_journals', compact('entries'));
     }
 
@@ -25,7 +30,9 @@ class JournalEntryController extends Controller
 
     public function create()
     {
-        $accounts = Account::select('id', DB::raw("CONCAT(code, ' - ', name) AS code_name"))->get();
+        $accounts = Cache::rememberForever('accounting.accounts.dropdown', function () {
+            return Account::select('id', DB::raw("CONCAT(code, ' - ', name) AS code_name"))->get();
+        });
 
         do {
             $lastId = JournalEntry::max('id') + 1;
@@ -71,13 +78,19 @@ class JournalEntryController extends Controller
             ]);
         }
 
+        // Invalidate journal cache
+        Cache::forget('accounting.journal_entries');
+
         return redirect()->route('admin.accounting.journals')->with('success', 'Journal entry created successfully.');
     }
 
     public function edit($id)
     {
         $entry = JournalEntry::with('items')->findOrFail($id);
-        $accounts = Account::select('id', DB::raw("CONCAT(code, ' - ', name) AS code_name"))->get();
+        $accounts = Cache::rememberForever('accounting.accounts.dropdown', function () {
+            return Account::select('id', DB::raw("CONCAT(code, ' - ', name) AS code_name"))->get();
+        });
+
         return view('addons.accounting.journal_form', compact('entry', 'accounts'));
     }
 
@@ -97,7 +110,7 @@ class JournalEntryController extends Controller
             'reference'      => $request->reference,
         ]);
 
-        // Clear old items
+        // Delete old items
         $entry->items()->delete();
 
         foreach ($request->accounts as $row) {
@@ -110,6 +123,9 @@ class JournalEntryController extends Controller
             ]);
         }
 
+        // Clear cache
+        Cache::forget('accounting.journal_entries');
+
         return redirect()->route('admin.accounting.journals')->with('success', 'Journal entry updated successfully.');
     }
 
@@ -117,6 +133,9 @@ class JournalEntryController extends Controller
     {
         $entry = JournalEntry::findOrFail($id);
         $entry->delete();
+
+        // Clear cache
+        Cache::forget('accounting.journal_entries');
 
         return response()->json(['message' => 'Deleted successfully']);
     }
