@@ -4,6 +4,7 @@ namespace App\Models\Accounting;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Account extends Model
 {
@@ -16,29 +17,33 @@ class Account extends Model
         'type',
         'code',
         'is_active',
+        'account_group_id',
     ];
 
     public $timestamps = true;
 
-    // One account can be used in many journal items
+    // 🔸 Relationships
     public function journalItems()
     {
         return $this->hasMany(JournalItem::class, 'account_id');
     }
 
-    // 🔹 Scope: Only active accounts
+    public function accountGroup()
+    {
+        return $this->belongsTo(AccountGroup::class, 'account_group_id');
+    }
+
+    // 🔸 Scopes
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    // 🔹 Scope: Filter by type (asset, liability, etc.)
     public function scopeOfType($query, $type)
     {
         return $query->where('type', $type);
     }
 
-    // 🔹 Scope: Search by name or code
     public function scopeSearch($query, $term)
     {
         return $query->where(function ($q) use ($term) {
@@ -46,11 +51,11 @@ class Account extends Model
               ->orWhere('code', 'like', "%{$term}%");
         });
     }
-    
+
+    // 🔸 Auto clear cache on update/delete
     protected static function booted()
     {
         static::saved(fn () => Cache::forget('accounting.accounts'));
         static::deleted(fn () => Cache::forget('accounting.accounts'));
     }
-
 }

@@ -25,9 +25,14 @@
       "from_directory": "images/accounting.png",
       "to_directory": "public/images/addons/accounting.png"
     },
+
     {
       "from_directory": "app/Controllers/Admin/ChartOfAccountController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/ChartOfAccountController.php"
+    },
+    {
+      "from_directory": "app/Controllers/Admin/AccountGroupController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/AccountGroupController.php"
     },
     {
       "from_directory": "app/Controllers/Admin/JournalEntryController.php",
@@ -37,6 +42,8 @@
       "from_directory": "app/Controllers/Admin/LedgerController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/LedgerController.php"
     },
+
+
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
       "to_directory": "app/Repositories/Admin/Addon/AccountingRepository.php"
@@ -45,10 +52,17 @@
       "from_directory": "app/Repositories/AccountingInterface.php",
       "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
     },
+
     {
       "from_directory": "app/Models/Account.php",
       "to_directory": "app/Models/Accounting/Account.php"
     },
+    {
+      "from_directory": "app/Models/AccountGroup.php",
+      "to_directory": "app/Models/Accounting/AccountGroup.php"
+    },
+
+
     {
       "from_directory": "app/Models/JournalEntry.php",
       "to_directory": "app/Models/Accounting/JournalEntry.php"
@@ -57,10 +71,9 @@
       "from_directory": "app/Models/JournalItem.php",
       "to_directory": "app/Models/Accounting/JournalItem.php"
     },
-    {
-      "from_directory": "View/Admin/view_journals.blade.php",
-      "to_directory": "resources/views/addons/accounting/journals.blade.php"
-    }, 
+
+
+ 
     {
       "from_directory": "View/Admin/journal_form.blade.php",
       "to_directory": "resources/views/addons/accounting/journal_form.blade.php"
@@ -81,6 +94,19 @@
       "from_directory": "View/Admin/ledger_summary.blade.php",
       "to_directory": "resources/views/addons/accounting/ledger_summary.blade.php"
     },
+    {
+      "from_directory": "View/Admin/account_groups_create.blade.php",
+      "to_directory": "resources/views/addons/accounting/account_groups_create.blade.php"
+    }, 
+    {
+      "from_directory": "View/Admin/account_groups_edit.blade.php",
+      "to_directory": "resources/views/addons/accounting/account_groups_edit.blade.php"
+    },
+    {
+      "from_directory": "View/Admin/account_groups_index.blade.php",
+      "to_directory": "resources/views/addons/accounting/account_groups_index.blade.php"
+    }, 
+ 
     {
       "from_directory": "routes/accounting-system.php",
       "to_directory": "routes/accounting-system.php"

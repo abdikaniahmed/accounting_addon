@@ -23,6 +23,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Type</th>
+                    <th>Group</th>
                     <th>Code</th>
                     <th>Status</th>
                 </tr>
@@ -32,6 +33,7 @@
                 <tr>
                     <td>{{ $account->name }}</td>
                     <td>{{ ucfirst($account->type) }}</td>
+                    <td>{{ $account->accountGroup?->name ?? '-' }}</td>
                     <td>{{ $account->code }}</td>
                     <td>{{ $account->is_active ? 'Active' : 'Inactive' }}</td>
                 </tr>

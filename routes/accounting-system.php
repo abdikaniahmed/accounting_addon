@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Addons\JournalEntryController;
 use App\Http\Controllers\Admin\Addons\ChartOfAccountController;
 use App\Http\Controllers\Admin\Addons\LedgerController;
+use App\Http\Controllers\Admin\Addons\AccountGroupController;
 
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
@@ -30,6 +31,13 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
            
             // Ledger Summary Route
             Route::get('/ledger', [LedgerController::class, 'index'])->name('admin.accounting.ledger');
+
+            Route::get('groups', [AccountGroupController::class, 'index'])->name('admin.accounting.groups.index');
+            Route::get('groups/create', [AccountGroupController::class, 'create'])->name('admin.accounting.groups.create');
+            Route::post('groups', [AccountGroupController::class, 'store'])->name('admin.accounting.groups.store');
+            Route::get('groups/{id}/edit', [AccountGroupController::class, 'edit'])->name('admin.accounting.groups.edit');
+            Route::put('groups/{id}', [AccountGroupController::class, 'update'])->name('admin.accounting.groups.update');
+            Route::delete('groups/{id}', [AccountGroupController::class, 'destroy'])->name('admin.accounting.groups.destroy');
 
         });
     });

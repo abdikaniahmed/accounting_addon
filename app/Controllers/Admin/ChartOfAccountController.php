@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Accounting\Account;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Accounting\AccountGroup;
 
 class ChartOfAccountController extends Controller
 {
@@ -19,9 +20,11 @@ class ChartOfAccountController extends Controller
         return view('addons.accounting.chart_of_accounts', compact('accounts'));
     }
 
+
     public function create()
     {
-        return view('addons.accounting.account_form');
+        $groups = AccountGroup::orderBy('name')->get();
+        return view('addons.accounting.account_form', compact('groups'));
     }
 
     public function store(Request $request)
@@ -29,13 +32,20 @@ class ChartOfAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:asset,liability,equity,revenue,expense',
+            'account_group_id' => 'nullable|exists:acc_account_groups,id',
         ]);
 
-        Account::create($request->only(['name', 'type', 'code', 'is_active']));
+        Account::create([
+            'name' => $request->name,
+            'type' => $request->type,
+            'code' => $request->code,
+            'is_active' => $request->has('is_active'),
+            'account_group_id' => $request->account_group_id,
+        ]);
 
-        // Invalidate cache after insert
-        Cache::forget('accounting.accounts');
+        \Cache::forget('accounting.accounts');
 
         return redirect()->route('admin.accounting.coa')->with('success', 'Account created successfully.');
     }
+
 }

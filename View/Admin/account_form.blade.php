@@ -34,6 +34,16 @@
             </div>
 
             <div class="form-group">
+                <label>{{ __('Account Group') }}</label>
+                <select name="account_group_id" class="form-control">
+                    <option value="">{{ __('Select Group (Optional)') }}</option>
+                    @foreach($groups as $group)
+                        <option value="{{ $group->id }}">{{ $group->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>Account Code (optional)</label>
                 <input type="text" name="code" class="form-control">
             </div>
