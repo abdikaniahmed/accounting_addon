@@ -30,6 +30,14 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/chart-of-accounts/{id}/edit', [ChartOfAccountController::class, 'edit'])->name('admin.accounting.coa.edit');
             Route::put('/chart-of-accounts/{id}', [ChartOfAccountController::class, 'update'])->name('admin.accounting.coa.update');
             Route::delete('/chart-of-accounts/{id}', [ChartOfAccountController::class, 'destroy'])->name('admin.accounting.coa.destroy');
+            Route::get('chart-of-accounts/import', [ChartOfAccountController::class, 'importView'])->name('admin.accounting.coa.import.view');
+            Route::post('chart-of-accounts/import', [ChartOfAccountController::class, 'import'])->name('admin.accounting.coa.import');
+            Route::get('accounting/coa/sample-download', function () {
+                $path = public_path('excel/chart_of_accounts_import_sample.xlsx');
+                return response()->download($path, 'chart_of_accounts_import_sample.xlsx');
+            })->name('admin.accounting.coa.sample.download');
+
+
 
             // Ledger Summary
             Route::get('/ledger', [LedgerController::class, 'index'])->name('admin.accounting.ledger');

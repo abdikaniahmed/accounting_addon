@@ -12,9 +12,14 @@
     <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">{{ __('Chart of Accounts') }}</h5>
         @if(hasPermission('accounting_coa_create'))
-            <a href="{{ route('admin.accounting.coa.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus"></i> {{ __('Add Account') }}
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.accounting.coa.import.view') }}" class="btn btn-outline-primary mr-2">
+                    <i class="bx bx-upload"></i> {{ __('Import Accounts') }}
+                </a>
+                <a href="{{ route('admin.accounting.coa.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> {{ __('Add Account') }}
+                </a>
+            </div>
         @endif
     </div>
 
