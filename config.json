@@ -1,8 +1,8 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.3.2",
-  "required_cms_version": "132",
+  "version": "1.3.3",
+  "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
   "directories": [
@@ -106,10 +106,20 @@
       "from_directory": "View/Admin/account_groups_index.blade.php",
       "to_directory": "resources/views/addons/accounting/account_groups_index.blade.php"
     }, 
+     {
+      "from_directory": "View/Admin/account_groups_import.blade.php",
+      "to_directory": "resources/views/addons/accounting/account_groups_import.blade.php"
+    }, 
  
+  
     {
       "from_directory": "routes/accounting-system.php",
       "to_directory": "routes/accounting-system.php"
+    },
+    {
+      "from_directory": "files/account_group_import_sample.xlsx",
+      "to_directory": "public/excel/account_group_import_sample.xlsx"
     }
+
   ]
 }

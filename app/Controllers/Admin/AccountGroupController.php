@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Addons;
 use App\Http\Controllers\Controller;
 use App\Models\Accounting\AccountGroup;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AccountGroupController extends Controller
 {
@@ -42,8 +43,49 @@ class AccountGroupController extends Controller
 
     public function destroy($id)
     {
-        $group = AccountGroup::findOrFail($id);
-        $group->delete();
-        return redirect()->route('admin.accounting.groups.index')->with('success', 'Group deleted.');
+        try {
+            $group = AccountGroup::findOrFail($id);
+            $group->delete();
+
+            return response()->json(['message' => __('Group deleted successfully.')], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => __('Something went wrong.')], 500);
+        }
     }
+
+    public function importView()
+    {
+        return view('addons.accounting.account_groups_import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        $path = $request->file('file')->getRealPath();
+        $collection = Excel::toCollection(null, $request->file('file'));
+
+        $rows = $collection[0]; // first sheet
+
+        $imported = 0;
+        $skipped = 0;
+        foreach ($rows->skip(1) as $row) {
+            $name = trim($row[0]);
+
+            if (empty($name) || AccountGroup::where('name', $name)->exists()) {
+                $skipped++;
+                continue;
+            }
+
+            AccountGroup::create(['name' => $name]);
+            $imported++;
+        }
+
+        return redirect()->route('admin.accounting.groups.index')
+            ->with('success', "$imported imported, $skipped skipped.");
+
+    }
+
 }
