@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
@@ -42,7 +42,10 @@
       "from_directory": "app/Controllers/Admin/LedgerController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/LedgerController.php"
     },
-
+    {
+      "from_directory": "app/Controllers/Admin/BalanceSheetController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/BalanceSheetController.php"
+    },
 
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
@@ -93,6 +96,10 @@
      {
       "from_directory": "View/Admin/ledger_summary.blade.php",
       "to_directory": "resources/views/addons/accounting/ledger_summary.blade.php"
+    },
+    {
+      "from_directory": "View/Admin/balance_sheet.blade.php",
+      "to_directory": "resources/views/addons/accounting/balance_sheet.blade.php"
     },
     {
       "from_directory": "View/Admin/account_groups_create.blade.php",

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Addons\JournalEntryController;
 use App\Http\Controllers\Admin\Addons\ChartOfAccountController;
 use App\Http\Controllers\Admin\Addons\LedgerController;
 use App\Http\Controllers\Admin\Addons\AccountGroupController;
+use App\Http\Controllers\Admin\Addons\BalanceSheetController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -37,10 +38,11 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
                 return response()->download($path, 'chart_of_accounts_import_sample.xlsx');
             })->name('admin.accounting.coa.sample.download');
 
-
-
             // Ledger Summary
             Route::get('/ledger', [LedgerController::class, 'index'])->name('admin.accounting.ledger');
+           
+            //Balance Sheet 
+            Route::get('/balance-sheet', [BalanceSheetController::class, 'index'])->name('admin.accounting.balance_sheet');
 
             // Account Groups
             Route::get('groups', [AccountGroupController::class, 'index'])->name('admin.accounting.groups.index');

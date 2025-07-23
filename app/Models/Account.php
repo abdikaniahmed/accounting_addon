@@ -32,6 +32,10 @@ class Account extends Model
     {
         return $this->belongsTo(AccountGroup::class, 'account_group_id');
     }
+    public function group()
+    {
+        return $this->accountGroup();
+    }
 
     // 🔸 Scopes
     public function scopeActive($query)
