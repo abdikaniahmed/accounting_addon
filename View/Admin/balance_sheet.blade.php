@@ -6,7 +6,16 @@
 @section('main-content')
 <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">{{ __('Balance Sheet') }}</h5>
+    <div>
+        <a href="{{ route('admin.accounting.balance_sheet.print', request()->query()) }}" target="_blank" class="btn btn-sm btn-outline-success">
+            <i class="bx bx-printer"></i> {{ __('Print') }}
+        </a>
+        <a href="{{ route('admin.accounting.balance_sheet.pdf', request()->query()) }}" class="btn btn-sm btn-outline-danger">
+            <i class="bx bxs-file-pdf"></i> {{ __('Download PDF') }}
+        </a>
+    </div>
 </div>
+
 
 <div class="card">
     <div class="card-body">
@@ -60,6 +69,45 @@
                 </table>
             @endforeach
         @endforeach
+        @php
+            $totalAssets = 0;
+            $totalLiabilities = 0;
+
+            if (isset($balances['asset'])) {
+                foreach ($balances['asset'] as $accounts) {
+                    foreach ($accounts as $acc) {
+                        $totalAssets += $acc['balance'];
+                    }
+                }
+            }
+
+            if (isset($balances['liability'])) {
+                foreach ($balances['liability'] as $accounts) {
+                    foreach ($accounts as $acc) {
+                        $totalLiabilities += $acc['balance'];
+                    }
+                }
+            }
+
+            $netAssets = $totalAssets - $totalLiabilities;
+        @endphp
+        <div class="mt-4 border-top pt-3">
+            <h5 class="text-dark">{{ __('Summary') }}</h5>
+            <table class="table table-bordered w-50 ml-auto">
+                <tr>
+                    <th>{{ __('Total Assets') }}</th>
+                    <td class="text-right">{{ number_format($totalAssets, 2) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ __('Total Liabilities') }}</th>
+                    <td class="text-right">{{ number_format($totalLiabilities, 2) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ __('Net Assets') }}</th>
+                    <td class="text-right font-weight-bold">{{ number_format($netAssets, 2) }}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 @endsection

@@ -43,7 +43,9 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
            
             //Balance Sheet 
             Route::get('/balance-sheet', [BalanceSheetController::class, 'index'])->name('admin.accounting.balance_sheet');
-
+            Route::get('/balance-sheet/print', [BalanceSheetController::class, 'print'])->name('admin.accounting.balance_sheet.print');
+            Route::get('/balance-sheet/pdf', [BalanceSheetController::class, 'pdf'])->name('admin.accounting.balance_sheet.pdf');
+           
             // Account Groups
             Route::get('groups', [AccountGroupController::class, 'index'])->name('admin.accounting.groups.index');
             Route::get('groups/create', [AccountGroupController::class, 'create'])->name('admin.accounting.groups.create');
