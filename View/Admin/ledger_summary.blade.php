@@ -68,7 +68,7 @@
                                 $balance += $amount;
                             @endphp
                             <tr>
-                                <td>{{ $txn->journalEntry->date }}</td>
+                                <td>{{ \Carbon\Carbon::parse($txn->journalEntry->date)->format('Y-m-d') }}</td>
                                 <td>{{ $txn->journalEntry->journal_number }}</td>
                                 <td>{{ $txn->journalEntry->description }}</td>
                                 <td>{{ $txn->type === 'debit' ? number_format($txn->amount, 2) : '' }}</td>
