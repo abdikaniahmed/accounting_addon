@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
@@ -45,6 +45,10 @@
     {
       "from_directory": "app/Controllers/Admin/BalanceSheetController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/BalanceSheetController.php"
+    },
+    {
+      "from_directory": "app/Controllers/Admin/ProfitLossController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/ProfitLossController.php"
     },
 
     {
@@ -129,6 +133,15 @@
       "from_directory": "View/Admin/balance_sheet_pdf.blade.php",
       "to_directory": "resources/views/addons/accounting/balance_sheet_pdf.blade.php"
     }, 
+    {
+      "from_directory": "View/Admin/profit_loss.blade.php",
+      "to_directory": "resources/views/addons/accounting/profit_loss.blade.php"
+    }, 
+    {
+      "from_directory": "View/Admin/profit_loss_monthly.blade.php",
+      "to_directory": "resources/views/addons/accounting/profit_loss_monthly.blade.php"
+    }, 
+
     {
       "from_directory": "routes/accounting-system.php",
       "to_directory": "routes/accounting-system.php"

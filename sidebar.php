@@ -32,6 +32,12 @@
                     <span>{{ __('Balance Sheet') }}</span>
                 </a>
             </li>
+            <li class="@yield('profit_loss')">
+                <a class="nav-link" href="{{ route('admin.accounting.profit_loss') }}">
+                    <i class="bx bx-bar-chart-alt-2"></i>
+                    <span>{{ __('Profit & Loss') }}</span>
+                </a>
+            </li>
         </ul>
     </li>
 @endif

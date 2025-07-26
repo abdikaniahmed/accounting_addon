@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Addons\ChartOfAccountController;
 use App\Http\Controllers\Admin\Addons\LedgerController;
 use App\Http\Controllers\Admin\Addons\AccountGroupController;
 use App\Http\Controllers\Admin\Addons\BalanceSheetController;
+use App\Http\Controllers\Admin\Addons\ProfitLossController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -61,6 +62,10 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
                 $path = public_path('excel/account_group_import_sample.xlsx');
                 return response()->download($path, 'account_group_import_sample.xlsx');
             })->name('admin.accounting.groups.sample.download');
+
+            // Profit & Loss Report
+            Route::get('/profit-loss', [ProfitLossController::class, 'index'])->name('admin.accounting.profit_loss');
+            Route::get('/profit-loss/monthly', [ProfitLossController::class, 'monthly'])->name('admin.accounting.profit_loss.monthly');
 
         });
     });
