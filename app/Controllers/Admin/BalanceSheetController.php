@@ -64,6 +64,7 @@ class BalanceSheetController extends Controller
 
                     if ($showAll || $balance != 0) {
                         $balances[$type][$group][] = [
+                            'id' => $account->id, 
                             'name' => $account->name,
                             'code' => $account->code,
                             'balance' => $balance,

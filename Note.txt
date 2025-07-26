@@ -1,0 +1,16 @@
+| Feature                          | Purpose                                            | Recommendation                                                             |
+| -------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------- |
+| 🧾 **Grand Totals by Type**      | To quickly see total assets vs. liabilities+equity | Add at bottom of each `type` group.                                        |
+| 📊 **Horizontal layout option**  | For visual accounting comparison                   | Offer toggle to switch layout (Assets vs Liabilities+Equity side-by-side). |
+| 🔍 **Drilldown to Ledger**       | Click account name to see transactions             | Add `route('admin.accounting.ledger', ['account' => $id])`.                |
+|
+
+Net Assets = Assets − Liabilities display at the bottom.
+
+Add company name and logo on top.
+
+
+done all the above 
+
+
+ 🧮 **Trial Balance integration** | For audit purposes | Complementary to balance sheet, especially for accounting accuracy.   |

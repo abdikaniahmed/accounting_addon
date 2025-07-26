@@ -120,7 +120,11 @@
                             @foreach($accounts as $account)
                                 <tr>
                                     <td>{{ $account['code'] }}</td>
-                                    <td>{{ $account['name'] }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.accounting.ledger', ['account_id' => $account['id'], 'start_date' => request('start_date'), 'end_date' => request('end_date')]) }}" target="_blank">
+                                            {{ $account['name'] }}
+                                        </a>
+                                    </td>
                                     <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
                                 </tr>
                                 @php $groupTotal += $account['balance']; @endphp
