@@ -7,38 +7,86 @@
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
-            padding: 10px;
+            padding: 20px;
         }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
+        .text-uppercase { text-transform: uppercase; }
+        .font-weight-bold { font-weight: bold; }
         .text-primary { color: #007bff; }
-        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
         .table th, .table td {
             border: 1px solid #000;
             padding: 6px;
         }
-        .font-weight-bold { font-weight: bold; }
-        h4, h5, h6 { margin: 5px 0; }
-        .mt-3 { margin-top: 1rem; }
-        .mt-4 { margin-top: 1.5rem; }
-        img {
-            display: block;
-            margin: 0 auto;
+
+        .logo {
+            height: 60px;
+            margin-bottom: 8px;
         }
 
+        .summary-table {
+            width: 50%;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
-    <div class="text-center mb-4">
-        <img src="{{ asset('uploads/company/logo.png') }}" alt="Company Logo" height="70" style="margin-bottom: 10px;">
-        <h4>{{ config('app.name', 'Your Company Name') }}</h4>
-        <p>{{ __('Balance Sheet') }}</p>
-        <p>{{ __('As of') }} {{ \Carbon\Carbon::parse($start)->toFormattedDateString() }} - {{ \Carbon\Carbon::parse($end)->toFormattedDateString() }}</p>
-    </div>
+
+<div class="text-center mb-3">
+    <img src="{{ public_path('uploads/company/logo.png') }}" class="logo" alt="Logo">
+    <h4>{{ config('app.name', 'Your Company Name') }}</h4>
+    <p>{{ __('Balance Sheet') }}</p>
+    <p>{{ __('As of') }} {{ \Carbon\Carbon::parse($start)->toFormattedDateString() }} - {{ \Carbon\Carbon::parse($end)->toFormattedDateString() }}</p>
+</div>
+
+@if($horizontal)
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center" colspan="3">{{ __('Assets') }}</th>
+            <th class="text-center" colspan="3">{{ __('Liabilities & Equity') }}</th>
+        </tr>
+        <tr>
+            <th>{{ __('Code') }}</th><th>{{ __('Account') }}</th><th class="text-right">{{ __('Balance') }}</th>
+            <th>{{ __('Code') }}</th><th>{{ __('Account') }}</th><th class="text-right">{{ __('Balance') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        @php
+            $assets = collect($balances['asset'] ?? [])->flatten(1);
+            $others = collect($balances)->except('asset')->flatten(2);
+            $rows = max($assets->count(), $others->count());
+        @endphp
+        @for($i = 0; $i < $rows; $i++)
+            <tr>
+                @php
+                    $a = $assets[$i] ?? null;
+                    $b = $others[$i] ?? null;
+                @endphp
+                <td>{{ $a['code'] ?? '' }}</td>
+                <td>{{ $a['name'] ?? '' }}</td>
+                <td class="text-right">{{ isset($a['balance']) ? number_format($a['balance'], 2) : '' }}</td>
+
+                <td>{{ $b['code'] ?? '' }}</td>
+                <td>{{ $b['name'] ?? '' }}</td>
+                <td class="text-right">{{ isset($b['balance']) ? number_format($b['balance'], 2) : '' }}</td>
+            </tr>
+        @endfor
+        </tbody>
+    </table>
+@else
     @foreach($balances as $type => $groups)
-            <h5 class="mt-4">{{ __($type) }}</h5>
+        <h5 class="mt-4 text-uppercase">{{ __($type) }}</h5>
+        @php $typeTotal = 0; @endphp
+
         @foreach($groups as $groupName => $accounts)
-            <h6 class="text-primary mt-3">{{ $groupName }}</h6>
+            <h6 class="text-primary">{{ $groupName }}</h6>
             <table class="table">
                 <thead>
                     <tr>
@@ -55,7 +103,10 @@
                             <td>{{ $account['name'] }}</td>
                             <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
                         </tr>
-                        @php $groupTotal += $account['balance']; @endphp
+                        @php
+                            $groupTotal += $account['balance'];
+                            $typeTotal += $account['balance'];
+                        @endphp
                     @endforeach
                     <tr>
                         <td colspan="2" class="text-right font-weight-bold">{{ __('Total') }} {{ $groupName }}</td>
@@ -64,45 +115,34 @@
                 </tbody>
             </table>
         @endforeach
+
+        <p class="text-right font-weight-bold mt-2">{{ __('Grand Total') }} {{ $type }}: {{ number_format($typeTotal, 2) }}</p>
     @endforeach
-    @php
-        $totalAssets = 0;
-        $totalLiabilities = 0;
+@endif
 
-        if (isset($balances['asset'])) {
-            foreach ($balances['asset'] as $accounts) {
-                foreach ($accounts as $acc) {
-                    $totalAssets += $acc['balance'];
-                }
-            }
-        }
+@php
+    $totalAssets = collect($balances['asset'] ?? [])->flatten(1)->sum('balance');
+    $totalLiabilities = collect($balances['liability'] ?? [])->flatten(1)->sum('balance');
+    $netAssets = $totalAssets + $totalLiabilities; // liabilities are stored negative
+@endphp
 
-        if (isset($balances['liability'])) {
-            foreach ($balances['liability'] as $accounts) {
-                foreach ($accounts as $acc) {
-                    $totalLiabilities += $acc['balance'];
-                }
-            }
-        }
+<div class="mt-4">
+    <h5>{{ __('Summary') }}</h5>
+    <table class="table summary-table">
+        <tr>
+            <th>{{ __('Total Assets') }}</th>
+            <td class="text-right">{{ number_format($totalAssets, 2) }}</td>
+        </tr>
+        <tr>
+            <th>{{ __('Total Liabilities') }}</th>
+            <td class="text-right">{{ number_format($totalLiabilities, 2) }}</td>
+        </tr>
+        <tr>
+            <th>{{ __('Net Assets') }}</th>
+            <td class="text-right font-weight-bold">{{ number_format($netAssets, 2) }}</td>
+        </tr>
+    </table>
+</div>
 
-        $netAssets = $totalAssets - $totalLiabilities;
-    @endphp
-    <div class="mt-4 border-top pt-3">
-        <h5 class="text-dark">{{ __('Summary') }}</h5>
-        <table class="table table-bordered w-50 ml-auto">
-            <tr>
-                <th>{{ __('Total Assets') }}</th>
-                <td class="text-right">{{ number_format($totalAssets, 2) }}</td>
-            </tr>
-            <tr>
-                <th>{{ __('Total Liabilities') }}</th>
-                <td class="text-right">{{ number_format($totalLiabilities, 2) }}</td>
-            </tr>
-            <tr>
-                <th>{{ __('Net Assets') }}</th>
-                <td class="text-right font-weight-bold">{{ number_format($netAssets, 2) }}</td>
-            </tr>
-        </table>
-    </div>
 </body>
 </html>

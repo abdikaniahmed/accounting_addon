@@ -16,7 +16,6 @@
     </div>
 </div>
 
-
 <div class="card">
     <div class="card-body">
         <form method="GET" action="{{ route('admin.accounting.balance_sheet') }}" class="form-inline mb-3">
@@ -30,67 +29,118 @@
                 <input type="checkbox" class="form-check-input" name="show_all" id="show_all" value="1" {{ request()->has('show_all') ? 'checked' : '' }}>
                 <label class="form-check-label" for="show_all">{{ __('Show All Accounts') }}</label>
             </div>
+            <div class="form-group form-check mr-2">
+                <input type="checkbox" class="form-check-input" name="horizontal" id="horizontal" value="1" {{ request()->has('horizontal') ? 'checked' : '' }}>
+                <label class="form-check-label" for="horizontal">{{ __('Horizontal Layout') }}</label>
+            </div>
             <button type="submit" class="btn btn-dark">{{ __('Filter') }}</button>
         </form>
 
-        @foreach($balances as $type => $groups)
-            <h5 class="mt-4 text-uppercase">{{ __($type) }}</h5>
-            @foreach($groups as $groupName => $accounts)
-                <h6 class="text-primary mt-3">{{ $groupName }}</h6>
-                <table class="table table-bordered table-sm">
-                    <thead>
-                        <tr>
-                            <th>{{ __('Code') }}</th>
-                            <th>{{ __('Account Name') }}</th>
-                            <th class="text-right">{{ __('Total') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $groupTotal = 0; @endphp
-                        @foreach($accounts as $account)
-                            <tr>
-                                <td>{{ $account['code'] }}</td>
-                                <td>{{ $account['name'] }}</td>
-                                <td class="text-right">
-                                    {{ number_format($account['balance'], 2) }}
-                                </td>
-                            </tr>
-                            @php $groupTotal += $account['balance']; @endphp
+        @if($horizontal)
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-uppercase">{{ __('Assets') }}</h5>
+                    @foreach($balances['asset'] ?? [] as $groupName => $accounts)
+                        <h6 class="text-primary mt-3">{{ $groupName }}</h6>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Code') }}</th>
+                                    <th>{{ __('Account Name') }}</th>
+                                    <th class="text-right">{{ __('Total') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $groupTotal = 0; @endphp
+                                @foreach($accounts as $account)
+                                    <tr>
+                                        <td>{{ $account['code'] }}</td>
+                                        <td>{{ $account['name'] }}</td>
+                                        <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
+                                    </tr>
+                                    @php $groupTotal += $account['balance']; @endphp
+                                @endforeach
+                                <tr>
+                                    <td colspan="2" class="text-right font-weight-bold">{{ __('Total') }} {{ $groupName }}</td>
+                                    <td class="text-right font-weight-bold">{{ number_format($groupTotal, 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @endforeach
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="text-uppercase">{{ __('Liabilities & Equity') }}</h5>
+                    @foreach(['liability', 'equity'] as $type)
+                        @foreach($balances[$type] ?? [] as $groupName => $accounts)
+                            <h6 class="text-primary mt-3">{{ $groupName }}</h6>
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Code') }}</th>
+                                        <th>{{ __('Account Name') }}</th>
+                                        <th class="text-right">{{ __('Total') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $groupTotal = 0; @endphp
+                                    @foreach($accounts as $account)
+                                        <tr>
+                                            <td>{{ $account['code'] }}</td>
+                                            <td>{{ $account['name'] }}</td>
+                                            <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
+                                        </tr>
+                                        @php $groupTotal += $account['balance']; @endphp
+                                    @endforeach
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">{{ __('Total') }} {{ $groupName }}</td>
+                                        <td class="text-right font-weight-bold">{{ number_format($groupTotal, 2) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         @endforeach
-                        <tr>
-                            <td colspan="2" class="text-right font-weight-bold">
-                                {{ __('Total') }} {{ $groupName }}
-                            </td>
-                            <td class="text-right font-weight-bold">
-                                {{ number_format($groupTotal, 2) }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            @foreach($balances as $type => $groups)
+                <h5 class="mt-4 text-uppercase">{{ __($type) }}</h5>
+                @foreach($groups as $groupName => $accounts)
+                    <h6 class="text-primary mt-3">{{ $groupName }}</h6>
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Code') }}</th>
+                                <th>{{ __('Account Name') }}</th>
+                                <th class="text-right">{{ __('Total') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $groupTotal = 0; @endphp
+                            @foreach($accounts as $account)
+                                <tr>
+                                    <td>{{ $account['code'] }}</td>
+                                    <td>{{ $account['name'] }}</td>
+                                    <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
+                                </tr>
+                                @php $groupTotal += $account['balance']; @endphp
+                            @endforeach
+                            <tr>
+                                <td colspan="2" class="text-right font-weight-bold">{{ __('Total') }} {{ $groupName }}</td>
+                                <td class="text-right font-weight-bold">{{ number_format($groupTotal, 2) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                @endforeach
             @endforeach
-        @endforeach
+        @endif
+
         @php
-            $totalAssets = 0;
-            $totalLiabilities = 0;
-
-            if (isset($balances['asset'])) {
-                foreach ($balances['asset'] as $accounts) {
-                    foreach ($accounts as $acc) {
-                        $totalAssets += $acc['balance'];
-                    }
-                }
-            }
-
-            if (isset($balances['liability'])) {
-                foreach ($balances['liability'] as $accounts) {
-                    foreach ($accounts as $acc) {
-                        $totalLiabilities += $acc['balance'];
-                    }
-                }
-            }
-
-            $netAssets = $totalAssets - $totalLiabilities;
+            $totalAssets = collect($balances['asset'] ?? [])->flatten(1)->sum('balance');
+            $totalLiabilities = collect($balances['liability'] ?? [])->flatten(1)->sum('balance');
+            $netAssets = $totalAssets + $totalLiabilities; // liabilities are negative
         @endphp
+
         <div class="mt-4 border-top pt-3">
             <h5 class="text-dark">{{ __('Summary') }}</h5>
             <table class="table table-bordered w-50 ml-auto">

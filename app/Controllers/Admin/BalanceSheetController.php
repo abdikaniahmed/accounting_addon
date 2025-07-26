@@ -8,7 +8,7 @@ use App\Models\Accounting\JournalItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use PDF; // Barryvdh\DomPDF\Facade\Pdf;
+use PDF;
 
 class BalanceSheetController extends Controller
 {
@@ -17,53 +17,40 @@ class BalanceSheetController extends Controller
         $start = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfYear();
         $end = $request->end_date ? Carbon::parse($request->end_date) : now();
         $showAll = $request->has('show_all');
+        $horizontal = $request->has('horizontal');
 
-        $accounts = Account::with('accountGroup')->get()->groupBy('type');
-        $balances = [];
+        $balances = $this->calculateBalances($start, $end, $showAll);
 
-        foreach ($accounts as $type => $groupedAccounts) {
-            foreach ($groupedAccounts->groupBy(fn($a) => $a->accountGroup->name ?? 'Ungrouped') as $group => $accs) {
-                foreach ($accs as $account) {
-                    $balance = JournalItem::where('account_id', $account->id)
-                        ->whereHas('journalEntry', function ($query) use ($start, $end) {
-                            $query->whereBetween('date', [$start->toDateString(), $end->toDateString()]);
-                        })
-                        ->select(DB::raw("SUM(CASE WHEN type = 'debit' THEN amount ELSE -amount END) as balance"))
-                        ->value('balance') ?? 0;
-
-                    if ($showAll || $balance != 0) {
-                        $balances[$type][$group][] = [
-                            'name' => $account->name,
-                            'code' => $account->code,
-                            'balance' => $balance,
-                        ];
-                    }
-                }
-            }
-        }
-
-        return view('addons.accounting.balance_sheet', compact('balances', 'start', 'end', 'showAll'));
+        return view('addons.accounting.balance_sheet', compact('balances', 'start', 'end', 'showAll', 'horizontal'));
     }
 
     public function print(Request $request)
     {
-        $data = $this->getBalanceData($request);
-        return view('addons.accounting.balance_sheet_print', $data);
+        $start = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfYear();
+        $end = $request->end_date ? Carbon::parse($request->end_date) : now();
+        $showAll = $request->has('show_all');
+        $horizontal = $request->has('horizontal');
+
+        $balances = $this->calculateBalances($start, $end, $showAll);
+
+        return view('addons.accounting.balance_sheet_print', compact('balances', 'start', 'end', 'showAll', 'horizontal'));
     }
 
     public function pdf(Request $request)
     {
-        $data = $this->getBalanceData($request);
-        $pdf = PDF::loadView('addons.accounting.balance_sheet_pdf', $data);
+        $start = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfYear();
+        $end = $request->end_date ? Carbon::parse($request->end_date) : now();
+        $showAll = $request->has('show_all');
+        $horizontal = $request->has('horizontal');
+
+        $balances = $this->calculateBalances($start, $end, $showAll);
+
+        $pdf = PDF::loadView('addons.accounting.balance_sheet_pdf', compact('balances', 'start', 'end', 'showAll', 'horizontal'));
         return $pdf->download('balance_sheet.pdf');
     }
 
-    private function getBalanceData(Request $request)
+    private function calculateBalances($start, $end, $showAll)
     {
-        $start = $request->start_date ? \Carbon\Carbon::parse($request->start_date) : now()->startOfYear();
-        $end = $request->end_date ? \Carbon\Carbon::parse($request->end_date) : now();
-        $showAll = $request->has('show_all');
-
         $accounts = Account::with('accountGroup')->get()->groupBy('type');
         $balances = [];
 
@@ -86,7 +73,6 @@ class BalanceSheetController extends Controller
             }
         }
 
-        return compact('balances', 'start', 'end', 'showAll');
+        return $balances;
     }
-
 }
