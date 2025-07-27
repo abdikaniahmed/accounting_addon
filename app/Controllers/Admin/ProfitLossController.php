@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use PDF;
 
 class ProfitLossController extends Controller
 {
@@ -85,6 +86,52 @@ class ProfitLossController extends Controller
 
         return view('addons.accounting.profit_loss_monthly', compact('monthlyReport', 'months', 'start', 'end'));
     }
+    
+    public function print(Request $request)
+    {
+        $start = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfYear();
+        $end = $request->end_date ? Carbon::parse($request->end_date) : now();
 
+        $report = $this->generateProfitLossData($start, $end);
 
+        return view('addons.accounting.profit_loss_print', compact('report', 'start', 'end'));
+    }
+
+    public function pdf(Request $request)
+    {
+        $start = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfYear();
+        $end = $request->end_date ? Carbon::parse($request->end_date) : now();
+
+        $report = $this->generateProfitLossData($start, $end);
+
+        $pdf = PDF::loadView('addons.accounting.profit_loss_pdf', compact('report', 'start', 'end'));
+        return $pdf->download('profit_loss_report.pdf');
+    }
+
+    private function generateProfitLossData($start, $end)
+    {
+        $accounts = \App\Models\Accounting\Account::with('accountGroup')->whereIn('type', ['revenue', 'expense'])->get();
+        $report = [];
+
+        foreach ($accounts->groupBy('type') as $type => $typedAccounts) {
+            foreach ($typedAccounts->groupBy(fn($a) => $a->accountGroup->name ?? 'Ungrouped') as $group => $groupAccounts) {
+                foreach ($groupAccounts as $account) {
+                    $amount = \App\Models\Accounting\JournalItem::where('account_id', $account->id)
+                        ->whereHas('journalEntry', fn($q) => $q->whereBetween('date', [$start, $end]))
+                        ->select(DB::raw("SUM(CASE WHEN type = 'debit' THEN amount ELSE -amount END) as amount"))
+                        ->value('amount') ?? 0;
+
+                    if ($amount != 0) {
+                        $report[$type][$group][] = [
+                            'code' => $account->code,
+                            'name' => $account->name,
+                            'amount' => $amount
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $report;
+    }
 }

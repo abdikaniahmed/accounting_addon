@@ -66,6 +66,8 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             // Profit & Loss Report
             Route::get('/profit-loss', [ProfitLossController::class, 'index'])->name('admin.accounting.profit_loss');
             Route::get('/profit-loss/monthly', [ProfitLossController::class, 'monthly'])->name('admin.accounting.profit_loss.monthly');
+            Route::get('/profit-loss/print', [ProfitLossController::class, 'print'])->name('admin.accounting.profit_loss.print');
+            Route::get('/profit-loss/pdf', [ProfitLossController::class, 'pdf'])->name('admin.accounting.profit_loss.pdf');
 
         });
     });

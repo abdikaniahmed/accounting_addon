@@ -14,6 +14,12 @@
         <a href="{{ route('admin.accounting.profit_loss.monthly', request()->query()) }}" class="btn btn-sm btn-outline-info">
             <i class="bx bx-calendar"></i> {{ __('Monthly Breakdown') }}
         </a>
+        <a href="{{ route('admin.accounting.profit_loss.print', request()->query()) }}" target="_blank" class="btn btn-sm btn-outline-success">
+            <i class="bx bx-printer"></i> {{ __('Print') }}
+        </a>
+        <a href="{{ route('admin.accounting.profit_loss.pdf', request()->query()) }}" class="btn btn-sm btn-outline-danger">
+            <i class="bx bxs-file-pdf"></i> {{ __('Download PDF') }}
+        </a>
     </div>
 </div>
 

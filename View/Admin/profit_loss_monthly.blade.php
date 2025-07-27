@@ -48,6 +48,46 @@
                 </table>
             @endforeach
         @endforeach
+
+        <hr>
+        <h5 class="mt-4 text-uppercase text-success">{{ __('Profit = Revenue - Expense') }}</h5>
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th class="text-left">{{ __('Month') }}</th>
+                    @foreach($months as $key => $label)
+                        <th class="text-right">{{ $label }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="font-weight-bold text-left text-primary">{{ __('Profit') }}</td>
+                    @foreach($months as $key => $label)
+                        @php
+                            $revenue = 0;
+                            $expense = 0;
+
+                            foreach($monthlyReport['revenue'] ?? [] as $group => $accounts) {
+                                foreach($accounts as $acc => $amounts) {
+                                    $revenue += $amounts[$key] ?? 0;
+                                }
+                            }
+
+                            foreach($monthlyReport['expense'] ?? [] as $group => $accounts) {
+                                foreach($accounts as $acc => $amounts) {
+                                    $expense += $amounts[$key] ?? 0;
+                                }
+                            }
+
+                            $profit = $revenue - $expense;
+                        @endphp
+                        <td class="text-right font-weight-bold">{{ number_format($profit, 2) }}</td>
+                    @endforeach
+                </tr>
+            </tbody>
+        </table>
+        
     </div>
 </div>
 
