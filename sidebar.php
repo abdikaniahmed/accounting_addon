@@ -38,6 +38,13 @@
                     <span>{{ __('Profit & Loss') }}</span>
                 </a>
             </li>
+            <li class="@yield('bank_mng')">
+                <a class="nav-link" href="{{ route('admin.accounting.bank_accounts.index') }}">
+                    <i class="bx bx-building-bank"></i>
+                    <span>{{ __('Bank') }}</span>
+                </a>
+            </li>
+
         </ul>
     </li>
 @endif

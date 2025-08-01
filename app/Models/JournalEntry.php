@@ -16,6 +16,7 @@ class JournalEntry extends Model
         'date',
         'reference',
         'description',
+        'type',
     ];
 
     protected $casts = [

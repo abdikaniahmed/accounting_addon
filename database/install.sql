@@ -50,3 +50,21 @@ CREATE TABLE IF NOT EXISTS `acc_journal_items` (
   INDEX `idx_journal_entry_id` (`journal_entry_id`),
   INDEX `idx_account_id` (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `acc_bank_accounts` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `account_id` BIGINT UNSIGNED NOT NULL,
+  `bank_name` VARCHAR(255) NOT NULL,
+  `account_number` VARCHAR(255) DEFAULT NULL,
+  `holder_name` VARCHAR(255) DEFAULT NULL,
+  `contact_number` VARCHAR(255) DEFAULT NULL,
+  `bank_branch` VARCHAR(255) DEFAULT NULL,
+  `opening_balance` DECIMAL(20, 2) DEFAULT 0.00,
+  `current_balance` DECIMAL(20, 2) DEFAULT 0.00,
+  `address` VARCHAR(500) DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `deleted_at` TIMESTAMP NULL DEFAULT NULL,
+  FOREIGN KEY (`account_id`) REFERENCES `acc_accounts`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

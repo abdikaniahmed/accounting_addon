@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\Addons\LedgerController;
 use App\Http\Controllers\Admin\Addons\AccountGroupController;
 use App\Http\Controllers\Admin\Addons\BalanceSheetController;
 use App\Http\Controllers\Admin\Addons\ProfitLossController;
+use App\Http\Controllers\Admin\Addons\BankAccountController;
+use App\Http\Controllers\Admin\Addons\BankTransferController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -68,6 +70,15 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/profit-loss/monthly', [ProfitLossController::class, 'monthly'])->name('admin.accounting.profit_loss.monthly');
             Route::get('/profit-loss/print', [ProfitLossController::class, 'print'])->name('admin.accounting.profit_loss.print');
             Route::get('/profit-loss/pdf', [ProfitLossController::class, 'pdf'])->name('admin.accounting.profit_loss.pdf');
+
+           // Banks 
+            Route::get('bank-accounts', [BankAccountController::class, 'index'])->name('admin.accounting.bank_accounts.index');
+            Route::post('bank-accounts', [BankAccountController::class, 'store'])->name('admin.accounting.bank_accounts.store');
+            Route::delete('bank-accounts/{id}', [BankAccountController::class, 'destroy'])->name('admin.accounting.bank_account.destroy');
+
+            Route::get('/transfers', [BankTransferController::class, 'index'])->name('admin.accounting.transfers.index');
+            Route::get('/transfers/create', [BankTransferController::class, 'create'])->name('admin.accounting.transfers.create');
+            Route::post('/transfers', [BankTransferController::class, 'store'])->name('admin.accounting.transfers.store');
 
         });
     });
