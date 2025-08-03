@@ -25,11 +25,11 @@ class JournalEntry extends Model
 
     public $timestamps = true;
 
-    // Eager load items and related accounts
-    protected $with = ['items.account'];
+    // ✅ Eager load items and their related accounts
+    protected $with = ['journalItems.account'];
 
-    // One entry has many journal items
-    public function items()
+    // ✅ Relationship: One entry has many journal items
+    public function journalItems()
     {
         return $this->hasMany(JournalItem::class, 'journal_entry_id');
     }
@@ -50,5 +50,14 @@ class JournalEntry extends Model
     public function scopeWithJournalNumber($query, $number)
     {
         return $query->where('journal_number', $number);
+    }
+
+    // ✅ Smart and safe journal number generator
+    public static function nextNumber()
+    {
+        $last = self::withTrashed()->latest('id')->first();
+        $lastNumber = $last ? (int) filter_var($last->journal_number, FILTER_SANITIZE_NUMBER_INT) : 0;
+
+        return '#JUR' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
     }
 }

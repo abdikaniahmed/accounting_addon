@@ -24,7 +24,9 @@
                     <select name="from_account_id" class="form-control select2" required>
                         <option value="">{{ __('Select Account') }}</option>
                         @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}">{{ $acc->name }} - {{ $acc->account_number }}</option>
+                        <option value="{{ $acc->id }}">
+                            {{ $acc->name }}{{ $acc->account_number ? ' - ' . $acc->account_number : '' }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -34,7 +36,9 @@
                     <select name="to_account_id" class="form-control select2" required>
                         <option value="">{{ __('Select Account') }}</option>
                         @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}">{{ $acc->name }} - {{ $acc->account_number }}</option>
+                        <option value="{{ $acc->id }}">
+                            {{ $acc->name }}{{ $acc->account_number ? ' - ' . $acc->account_number : '' }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -81,11 +85,16 @@
             </thead>
             <tbody>
                 @forelse($transfers as $transfer)
+                @php
+                $from = $transfer->journalItems->firstWhere('type', 'credit')?->account?->name ?? '-';
+                $to = $transfer->journalItems->firstWhere('type', 'debit')?->account?->name ?? '-';
+                $amount = $transfer->journalItems->firstWhere('type', 'debit')?->amount ?? 0;
+                @endphp
                 <tr>
                     <td>{{ $transfer->date }}</td>
-                    <td>{{ $transfer->fromAccount->name ?? '-' }}</td>
-                    <td>{{ $transfer->toAccount->name ?? '-' }}</td>
-                    <td>{{ number_format($transfer->amount, 2) }}</td>
+                    <td>{{ $from }}</td>
+                    <td>{{ $to }}</td>
+                    <td>{{ number_format($amount, 2) }}</td>
                     <td>{{ $transfer->reference }}</td>
                     <td>{{ $transfer->description }}</td>
                 </tr>
@@ -101,7 +110,12 @@
 @endsection
 
 @push('script')
+<!-- Ensure Select2 JS and CSS are loaded globally or here -->
 <script>
-$('.select2').select2();
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%'
+    });
+});
 </script>
 @endpush

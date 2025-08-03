@@ -13,18 +13,19 @@ class BankTransferController extends Controller
 {
     public function index()
     {
+        $accounts = Account::active()  // add this
+            ->where('type', 'asset')
+            ->where(function ($q) {
+                $q->where('name', 'like', '%Cash%')
+                    ->orWhere('name', 'like', '%Bank%')
+                    ->orWhere('name', 'like', '%Zaad%')
+                    ->orWhere('name', 'like', '%eDahab%');
+            })
+            ->get();
+
         $transfers = JournalEntry::with(['journalItems.account'])
             ->where('type', 'transfer')
             ->latest()
-            ->get();
-
-        $accounts = Account::where('type', 'asset')
-            ->whereHas('accountGroup', function ($q) {
-                $q->where('name', 'like', '%Cash%')
-                ->orWhere('name', 'like', '%Bank%')
-                ->orWhere('name', 'like', '%Zaad%')
-                ->orWhere('name', 'like', '%eDahab%');
-            })
             ->get();
 
         return view('addons.accounting.bank_transfer', compact('transfers', 'accounts'));
@@ -61,12 +62,12 @@ class BankTransferController extends Controller
             $entry = new JournalEntry();
             $entry->date = $request->date;
             $entry->type = 'transfer';
-            $entry->journal_number = JournalEntry::nextNumber(); // You must define this method
+            $entry->journal_number = JournalEntry::nextNumber(); // make sure this exists!
             $entry->reference = $request->reference;
             $entry->description = $request->description ?? 'Fund Transfer';
             $entry->save();
 
-            // Credit from account
+            // Credit
             JournalItem::create([
                 'journal_entry_id' => $entry->id,
                 'account_id' => $request->from_account_id,
@@ -74,7 +75,7 @@ class BankTransferController extends Controller
                 'amount' => $request->amount,
             ]);
 
-            // Debit to account
+            // Debit
             JournalItem::create([
                 'journal_entry_id' => $entry->id,
                 'account_id' => $request->to_account_id,
@@ -87,7 +88,8 @@ class BankTransferController extends Controller
             return redirect()->route('admin.accounting.transfers.index')->with('success', __('Transfer recorded successfully.'));
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(__('Failed to record transfer: ') . $e->getMessage())->withInput();
+            dd('Transfer failed: ' . $e->getMessage());
         }
     }
+
 }
