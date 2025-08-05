@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Addons\BalanceSheetController;
 use App\Http\Controllers\Admin\Addons\ProfitLossController;
 use App\Http\Controllers\Admin\Addons\BankAccountController;
 use App\Http\Controllers\Admin\Addons\BankTransferController;
+use App\Http\Controllers\Admin\Addons\CustomerController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -79,6 +80,14 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/transfers', [BankTransferController::class, 'index'])->name('admin.accounting.transfers.index');
             Route::get('/transfers/create', [BankTransferController::class, 'create'])->name('admin.accounting.transfers.create');
             Route::post('/transfers', [BankTransferController::class, 'store'])->name('admin.accounting.transfers.store');
+
+            // Customers
+            Route::get('/customers', [CustomerController::class, 'index'])->name('admin.accounting.customers.index');
+            Route::get('/customers/create', [CustomerController::class, 'create'])->name('admin.accounting.customers.create');
+            Route::post('/customers', [CustomerController::class, 'store'])->name('admin.accounting.customers.store');
+            Route::get('/customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.accounting.customers.edit');
+            Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('admin.accounting.customers.update');
+            Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('admin.accounting.customers.destroy');
 
         });
     });

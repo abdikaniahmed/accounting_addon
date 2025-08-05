@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
@@ -58,6 +58,10 @@
       "from_directory": "app/Controllers/Admin/BankTransferController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/BankTransferController.php"
     },
+    {
+      "from_directory": "app/Controllers/Admin/CustomerController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/CustomerController.php"
+    },
 
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
@@ -86,7 +90,10 @@
       "from_directory": "app/Models/JournalItem.php",
       "to_directory": "app/Models/Accounting/JournalItem.php"
     },
-
+    {
+      "from_directory": "app/Models/Contact.php",
+      "to_directory": "app/Models/Accounting/Contact.php"
+    },
 
  
     {
@@ -164,7 +171,19 @@
     {
       "from_directory": "View/Admin/bank_transfer.blade.php",
       "to_directory": "resources/views/addons/accounting/bank_transfer.blade.php"
+    },
+    {
+      "from_directory": "View/Admin/customers_create.blade.php",
+      "to_directory": "resources/views/addons/accounting/customers_create.blade.php"
     }, 
+    {
+      "from_directory": "View/Admin/customers_index.blade.php",
+      "to_directory": "resources/views/addons/accounting/customers_index.blade.php"
+    },  
+    {
+      "from_directory": "View/Admin/customers_edit.blade.php",
+      "to_directory": "resources/views/addons/accounting/customers_edit.blade.php"
+    },  
 
     {
       "from_directory": "routes/accounting-system.php",
