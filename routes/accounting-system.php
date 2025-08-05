@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Addons\ProfitLossController;
 use App\Http\Controllers\Admin\Addons\BankAccountController;
 use App\Http\Controllers\Admin\Addons\BankTransferController;
 use App\Http\Controllers\Admin\Addons\CustomerController;
+use App\Http\Controllers\Admin\Addons\VendorController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -44,12 +45,12 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
 
             // Ledger Summary
             Route::get('/ledger', [LedgerController::class, 'index'])->name('admin.accounting.ledger');
-           
-            //Balance Sheet 
+
+            // Balance Sheet
             Route::get('/balance-sheet', [BalanceSheetController::class, 'index'])->name('admin.accounting.balance_sheet');
             Route::get('/balance-sheet/print', [BalanceSheetController::class, 'print'])->name('admin.accounting.balance_sheet.print');
             Route::get('/balance-sheet/pdf', [BalanceSheetController::class, 'pdf'])->name('admin.accounting.balance_sheet.pdf');
-           
+
             // Account Groups
             Route::get('groups', [AccountGroupController::class, 'index'])->name('admin.accounting.groups.index');
             Route::get('groups/create', [AccountGroupController::class, 'create'])->name('admin.accounting.groups.create');
@@ -58,7 +59,6 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::put('groups/{id}', [AccountGroupController::class, 'update'])->name('admin.accounting.groups.update');
             Route::delete('groups/{id}', [AccountGroupController::class, 'destroy'])->name('admin.accounting.groups.destroy');
 
-            // Account Groups Import
             Route::get('groups/import', [AccountGroupController::class, 'importView'])->name('admin.accounting.groups.import.view');
             Route::post('groups/import', [AccountGroupController::class, 'import'])->name('admin.accounting.groups.import');
             Route::get('accounting/groups/sample-download', function () {
@@ -72,7 +72,7 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/profit-loss/print', [ProfitLossController::class, 'print'])->name('admin.accounting.profit_loss.print');
             Route::get('/profit-loss/pdf', [ProfitLossController::class, 'pdf'])->name('admin.accounting.profit_loss.pdf');
 
-           // Banks 
+            // Banks
             Route::get('bank-accounts', [BankAccountController::class, 'index'])->name('admin.accounting.bank_accounts.index');
             Route::post('bank-accounts', [BankAccountController::class, 'store'])->name('admin.accounting.bank_accounts.store');
             Route::delete('bank-accounts/{id}', [BankAccountController::class, 'destroy'])->name('admin.accounting.bank_account.destroy');
@@ -89,6 +89,13 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('admin.accounting.customers.update');
             Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->name('admin.accounting.customers.destroy');
 
+            // Vendors
+            Route::get('/vendors', [VendorController::class, 'index'])->name('admin.accounting.vendors.index');
+            Route::get('/vendors/create', [VendorController::class, 'create'])->name('admin.accounting.vendors.create');
+            Route::post('/vendors', [VendorController::class, 'store'])->name('admin.accounting.vendors.store');
+            Route::get('/vendors/{id}/edit', [VendorController::class, 'edit'])->name('admin.accounting.vendors.edit');
+            Route::put('/vendors/{id}', [VendorController::class, 'update'])->name('admin.accounting.vendors.update');
+            Route::delete('/vendors/{id}', [VendorController::class, 'destroy'])->name('admin.accounting.vendors.destroy');
         });
     });
 });

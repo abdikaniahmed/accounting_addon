@@ -24,3 +24,19 @@ Add default values for existing rows (e.g., 'manual')
 Add an index or enum for the type
 
 Generate a Laravel migration version too
+
+
+
+## Customer and Vendors
+
+Let me know if you'd like:
+
+Breadcrumbs added
+
+Validation errors displayed
+
+Dynamic pagination or search
+
+Print/PDF support like other modules
+
+Or shall I move on to the VendorController?

@@ -53,7 +53,11 @@ hasPermission('accounting_journal_read')))
                 <i class="bx bx-user"></i> <span>{{ __('Customers') }}</span>
             </a>
         </li>
-
+        <li class="@yield('vendors')">
+            <a class="nav-link" href="{{ route('admin.accounting.vendors.index') }}">
+                <i class="bx bx-store"></i> <span>{{ __('Vendors') }}</span>
+            </a>
+        </li>
     </ul>
 </li>
 @endif

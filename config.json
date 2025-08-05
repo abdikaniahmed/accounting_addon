@@ -62,6 +62,11 @@
       "from_directory": "app/Controllers/Admin/CustomerController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/CustomerController.php"
     },
+    {
+      "from_directory": "app/Controllers/Admin/VendorController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/VendorController.php"
+    },
+
 
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
@@ -184,7 +189,19 @@
       "from_directory": "View/Admin/customers_edit.blade.php",
       "to_directory": "resources/views/addons/accounting/customers_edit.blade.php"
     },  
-
+    {
+      "from_directory": "View/Admin/vendors_index.blade.php",
+      "to_directory": "resources/views/addons/accounting/vendors_index.blade.php"
+    },  
+    {
+      "from_directory": "View/Admin/vendors_create.blade.php",
+      "to_directory": "resources/views/addons/accounting/vendors_create.blade.php"
+    },  
+    {
+      "from_directory": "View/Admin/vendors_edit.blade.php",
+      "to_directory": "resources/views/addons/accounting/vendors_edit.blade.php"
+    },  
+    
     {
       "from_directory": "routes/accounting-system.php",
       "to_directory": "routes/accounting-system.php"
