@@ -66,6 +66,10 @@
       "from_directory": "app/Controllers/Admin/VendorController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/VendorController.php"
     },
+    {
+      "from_directory": "app/Controllers/Admin/QuickExpensesController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/QuickExpensesController.php"
+    },
 
 
     {
@@ -98,6 +102,10 @@
     {
       "from_directory": "app/Models/Contact.php",
       "to_directory": "app/Models/Accounting/Contact.php"
+    },
+    {
+      "from_directory": "app/Models/QuickExpense.php",
+      "to_directory": "app/Models/Accounting/QuickExpense.php"
     },
 
  
@@ -201,7 +209,15 @@
       "from_directory": "View/Admin/vendors_edit.blade.php",
       "to_directory": "resources/views/addons/accounting/vendors_edit.blade.php"
     },  
-    
+      {
+      "from_directory": "View/Admin/quick_expenses_form.blade.php",
+      "to_directory": "resources/views/addons/accounting/quick_expenses_form.blade.php"
+    },  
+    {
+      "from_directory": "View/Admin/quick_expenses_index.blade.php",
+      "to_directory": "resources/views/addons/accounting/quick_expenses_index.blade.php"
+    },  
+
     {
       "from_directory": "routes/accounting-system.php",
       "to_directory": "routes/accounting-system.php"

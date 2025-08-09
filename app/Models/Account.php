@@ -16,6 +16,7 @@ class Account extends Model
         'name',
         'type',
         'code',
+        'is_money',          // ✅ Added here
         'is_active',
         'account_group_id',
     ];
@@ -32,6 +33,7 @@ class Account extends Model
     {
         return $this->belongsTo(AccountGroup::class, 'account_group_id');
     }
+
     public function group()
     {
         return $this->accountGroup();
@@ -54,6 +56,14 @@ class Account extends Model
             $q->where('name', 'like', "%{$term}%")
               ->orWhere('code', 'like', "%{$term}%");
         });
+    }
+
+    /**
+     * Scope for only money accounts (Cash, Bank, Mobile Wallets, etc.)
+     */
+    public function scopeMoney($query)
+    {
+        return $query->where('is_money', true);
     }
 
     // 🔸 Auto clear cache on update/delete

@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\Addons\BankAccountController;
 use App\Http\Controllers\Admin\Addons\BankTransferController;
 use App\Http\Controllers\Admin\Addons\CustomerController;
 use App\Http\Controllers\Admin\Addons\VendorController;
+use App\Http\Controllers\Admin\Addons\QuickExpensesController;
+
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -96,6 +98,15 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/vendors/{id}/edit', [VendorController::class, 'edit'])->name('admin.accounting.vendors.edit');
             Route::put('/vendors/{id}', [VendorController::class, 'update'])->name('admin.accounting.vendors.update');
             Route::delete('/vendors/{id}', [VendorController::class, 'destroy'])->name('admin.accounting.vendors.destroy');
+
+                        // Quick Expenses
+            Route::get('/quick-expenses', [QuickExpensesController::class, 'index'])->name('admin.accounting.quick_expenses.index');
+            Route::get('/quick-expenses/create', [QuickExpensesController::class, 'create'])->name('admin.accounting.quick_expenses.create');
+            Route::post('/quick-expenses', [QuickExpensesController::class, 'store'])->name('admin.accounting.quick_expenses.store');
+            Route::get('/quick-expenses/{id}/edit', [QuickExpensesController::class, 'edit'])->name('admin.accounting.quick_expenses.edit');
+            Route::put('/quick-expenses/{id}', [QuickExpensesController::class, 'update'])->name('admin.accounting.quick_expenses.update');
+            Route::delete('/quick-expenses/{id}', [QuickExpensesController::class, 'destroy'])->name('admin.accounting.quick_expenses.destroy');
+
         });
     });
 });

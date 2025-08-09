@@ -58,6 +58,11 @@ hasPermission('accounting_journal_read')))
                 <i class="bx bx-store"></i> <span>{{ __('Vendors') }}</span>
             </a>
         </li>
+        <li class="@yield('quick_expenses')">
+            <a class="nav-link" href="{{ route('admin.accounting.quick_expenses.index') }}">
+                <i class="bx bx-wallet"></i> <span>{{ __('Quick Expenses') }}</span>
+            </a>
+        </li>
     </ul>
 </li>
 @endif
