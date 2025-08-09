@@ -16,7 +16,7 @@ class Account extends Model
         'name',
         'type',
         'code',
-        'is_money',          // ✅ Added here
+        'is_money',        // ✅ Added here
         'is_active',
         'account_group_id',
     ];

@@ -14,7 +14,8 @@ class ChartOfAccountController extends Controller
     public function index()
     {
         $accounts = Cache::remember('accounting.accounts', 1440, function () {
-            return Account::orderBy('name')->get();
+            // (Optional) order money accounts first, then by name
+            return Account::orderByDesc('is_money')->orderBy('name')->get();
         });
 
         return view('addons.accounting.chart_of_accounts', compact('accounts'));
@@ -29,28 +30,31 @@ class ChartOfAccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:asset,liability,equity,revenue,expense',
+            'name'             => 'required|string|max:255',
+            'type'             => 'required|in:asset,liability,equity,revenue,expense',
             'account_group_id' => 'nullable|exists:acc_account_groups,id',
+            'is_money'         => 'sometimes|boolean',
         ]);
 
         Account::create([
-            'name' => $request->name,
-            'type' => $request->type,
-            'code' => $request->code,
-            'is_active' => $request->has('is_active'),
+            'name'             => $request->name,
+            'type'             => $request->type,
+            'code'             => $request->code,
+            'is_active'        => $request->has('is_active'),
             'account_group_id' => $request->account_group_id,
+            'is_money'         => $request->boolean('is_money'),
         ]);
 
         Cache::forget('accounting.accounts');
 
-        return redirect()->route('admin.accounting.coa')->with('success', 'Account created successfully.');
+        return redirect()->route('admin.accounting.coa')
+            ->with('success', __('Account created successfully.'));
     }
 
     public function edit($id)
     {
         $account = Account::findOrFail($id);
-        $groups = AccountGroup::orderBy('name')->get();
+        $groups  = AccountGroup::orderBy('name')->get();
 
         return view('addons.accounting.account_form', compact('account', 'groups'));
     }
@@ -58,23 +62,26 @@ class ChartOfAccountController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:asset,liability,equity,revenue,expense',
+            'name'             => 'required|string|max:255',
+            'type'             => 'required|in:asset,liability,equity,revenue,expense',
             'account_group_id' => 'nullable|exists:acc_account_groups,id',
+            'is_money'         => 'sometimes|boolean',
         ]);
 
         $account = Account::findOrFail($id);
         $account->update([
-            'name' => $request->name,
-            'type' => $request->type,
-            'code' => $request->code,
-            'is_active' => $request->has('is_active'),
+            'name'             => $request->name,
+            'type'             => $request->type,
+            'code'             => $request->code,
+            'is_active'        => $request->has('is_active'),
             'account_group_id' => $request->account_group_id,
+            'is_money'         => $request->boolean('is_money'),
         ]);
 
         Cache::forget('accounting.accounts');
 
-        return redirect()->route('admin.accounting.coa')->with('success', 'Account updated successfully.');
+        return redirect()->route('admin.accounting.coa')
+            ->with('success', __('Account updated successfully.'));
     }
 
     public function destroy($id)
@@ -84,7 +91,7 @@ class ChartOfAccountController extends Controller
 
         Cache::forget('accounting.accounts');
 
-        return response()->json(['status' => 'success', 'message' => 'Account deleted successfully.']);
+        return response()->json(['status' => 'success', 'message' => __('Account deleted successfully.')]);
     }
 
     public function importView()
@@ -99,15 +106,16 @@ class ChartOfAccountController extends Controller
         ]);
 
         $collection = Excel::toCollection(null, $request->file('file'));
-        $rows = $collection[0];
-        $imported = 0;
+        $rows      = $collection[0] ?? collect();
+        $imported  = 0;
 
         foreach ($rows->skip(1) as $row) {
-            $name   = trim($row[0]);
-            $type   = strtolower(trim($row[1]));
-            $code   = trim($row[2]);
-            $group  = trim($row[3]);
-            $active = strtolower(trim($row[4])) === 'yes';
+            $name    = trim((string)($row[0] ?? ''));
+            $type    = strtolower(trim((string)($row[1] ?? '')));
+            $code    = trim((string)($row[2] ?? ''));
+            $group   = trim((string)($row[3] ?? ''));
+            $active  = $this->parseBool($row[4] ?? null);
+            $isMoney = $this->parseBool($row[5] ?? null); // NEW: 6th column
 
             if (empty($name) || !in_array($type, ['asset', 'liability', 'equity', 'revenue', 'expense'])) {
                 continue;
@@ -116,16 +124,17 @@ class ChartOfAccountController extends Controller
             $group_id = null;
             if (!empty($group)) {
                 $groupModel = AccountGroup::firstOrCreate(['name' => $group]);
-                $group_id = $groupModel->id;
+                $group_id   = $groupModel->id;
             }
 
             if (!Account::where('name', $name)->exists()) {
                 Account::create([
-                    'name' => $name,
-                    'type' => $type,
-                    'code' => $code,
-                    'is_active' => $active,
+                    'name'             => $name,
+                    'type'             => $type,
+                    'code'             => $code,
+                    'is_active'        => $active,
                     'account_group_id' => $group_id,
+                    'is_money'         => $isMoney,
                 ]);
                 $imported++;
             }
@@ -134,6 +143,13 @@ class ChartOfAccountController extends Controller
         Cache::forget('accounting.accounts');
 
         return redirect()->route('admin.accounting.coa')
-            ->with('success', "$imported accounts imported successfully.");
+            ->with('success', __("$imported accounts imported successfully."));
+    }
+
+    /** Parse common boolean-ish values (yes/no/true/false/1/0/y/n). */
+    private function parseBool($val): bool
+    {
+        $v = strtolower(trim((string)$val));
+        return in_array($v, ['1','true','yes','y'], true);
     }
 }

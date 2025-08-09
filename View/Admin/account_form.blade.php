@@ -1,11 +1,11 @@
 @extends('admin.partials.master')
 
 @section('title')
-    {{ isset($account) ? __('Edit Account') : __('Add Account') }}
+{{ isset($account) ? __('Edit Account') : __('Add Account') }}
 @endsection
 
 @section('accounting_active')
-    sidebar_active
+sidebar_active
 @endsection
 
 @section('main-content')
@@ -21,23 +21,22 @@
         }}" method="POST">
             @csrf
             @if(isset($account))
-                @method('PUT')
+            @method('PUT')
             @endif
 
             <div class="form-group">
-                <label>Account Name</label>
-                <input type="text" name="name" class="form-control" 
-                       value="{{ old('name', $account->name ?? '') }}" required>
+                <label>{{ __('Account Name') }}</label>
+                <input type="text" name="name" class="form-control" value="{{ old('name', $account->name ?? '') }}"
+                    required>
             </div>
 
             <div class="form-group">
-                <label>Account Type</label>
+                <label>{{ __('Account Type') }}</label>
                 <select name="type" class="form-control" required>
                     @foreach(['asset', 'liability', 'equity', 'revenue', 'expense'] as $type)
-                        <option value="{{ $type }}" 
-                            {{ (old('type', $account->type ?? '') === $type) ? 'selected' : '' }}>
-                            {{ ucfirst($type) }}
-                        </option>
+                    <option value="{{ $type }}" {{ (old('type', $account->type ?? '') === $type) ? 'selected' : '' }}>
+                        {{ ucfirst($type) }}
+                    </option>
                     @endforeach
                 </select>
             </div>
@@ -47,24 +46,35 @@
                 <select name="account_group_id" class="form-control">
                     <option value="">{{ __('Select Group (Optional)') }}</option>
                     @foreach($groups as $group)
-                        <option value="{{ $group->id }}" 
-                            {{ (old('account_group_id', $account->account_group_id ?? '') == $group->id) ? 'selected' : '' }}>
-                            {{ $group->name }}
-                        </option>
+                    <option value="{{ $group->id }}"
+                        {{ (old('account_group_id', $account->account_group_id ?? '') == $group->id) ? 'selected' : '' }}>
+                        {{ $group->name }}
+                    </option>
                     @endforeach
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Account Code (optional)</label>
-                <input type="text" name="code" class="form-control"
-                       value="{{ old('code', $account->code ?? '') }}">
+                <label>{{ __('Account Code (optional)') }}</label>
+                <input type="text" name="code" class="form-control" value="{{ old('code', $account->code ?? '') }}">
             </div>
 
-            <div class="form-check mb-3">
+            <div class="form-check mb-2">
                 <input type="checkbox" name="is_active" class="form-check-input" value="1"
                     {{ old('is_active', $account->is_active ?? true) ? 'checked' : '' }}>
-                <label class="form-check-label">Active</label>
+                <label class="form-check-label">{{ __('Active') }}</label>
+            </div>
+
+            {{-- NEW: Money selector --}}
+            <div class="form-check mb-3">
+                <input type="checkbox" name="is_money" class="form-check-input" value="1"
+                    {{ old('is_money', $account->is_money ?? false) ? 'checked' : '' }}>
+                <label class="form-check-label">
+                    {{ __('This is a money account (Cash/Bank/Mobile wallet)') }}
+                </label>
+                <small class="form-text text-muted">
+                    {{ __('Tick for cash, bank and mobile-wallet accounts used for payments and transfers.') }}
+                </small>
             </div>
 
             <button type="submit" class="btn btn-primary">

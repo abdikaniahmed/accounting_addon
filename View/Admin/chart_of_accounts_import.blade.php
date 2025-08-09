@@ -1,11 +1,11 @@
 @extends('admin.partials.master')
 
 @section('title')
-    {{ __('Import Chart of Accounts') }}
+{{ __('Import Chart of Accounts') }}
 @endsection
 
 @section('accounting_active')
-    sidebar_active
+sidebar_active
 @endsection
 
 @section('main-content')
@@ -20,8 +20,11 @@
             <div class="form-group">
                 <label for="file">{{ __('Upload File') }} <span class="text-danger">*</span></label>
                 <input type="file" class="form-control" name="file" id="file" accept=".csv,.xlsx,.xls" required>
-                <small class="text-muted">
-                    {{ __('Columns: Name, Type, Code, Group, Active (Yes/No). Supported formats: CSV, XLSX, XLS.') }}
+                <small class="text-muted d-block mt-1">
+                    {{ __('Columns (order): Name, Type, Code, Group, Active (Yes/No), Money (Yes/No).') }}
+                </small>
+                <small class="text-muted d-block">
+                    {{ __('Supported formats: CSV, XLSX, XLS.') }}
                 </small>
             </div>
 
