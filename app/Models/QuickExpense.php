@@ -12,17 +12,9 @@ class QuickExpense extends Model
     protected $table = 'acc_quick_expenses';
 
     protected $fillable = [
-        'title',
-        'description',
-        'account_id',
-        'payment_account_id',
-        'amount',
-        'bill_file',
-        'date',
-        'reference',
-        'vendor',
+        'title','description','account_id','payment_account_id','amount','bill_file',
+        'date','reference','vendor','journal_entry_id',
     ];
-
     public $timestamps = true;
 
     // 🔸 Relationships
@@ -51,4 +43,10 @@ class QuickExpense extends Model
     {
         return $query->whereBetween('date', [$start, $end]);
     }
+
+    public function journalEntry()
+    {
+        return $this->belongsTo(\App\Models\Accounting\JournalEntry::class, 'journal_entry_id');
+    }
+
 }

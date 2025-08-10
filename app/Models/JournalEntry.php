@@ -60,4 +60,11 @@ class JournalEntry extends Model
 
         return '#JUR' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
     }
+
+    // app/Models/Accounting/JournalEntry.php
+    public function source()
+    {
+        return $this->morphTo();
+    }
+
 }

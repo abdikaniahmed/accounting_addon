@@ -80,7 +80,6 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::delete('bank-accounts/{id}', [BankAccountController::class, 'destroy'])->name('admin.accounting.bank_account.destroy');
 
             Route::get('/transfers', [BankTransferController::class, 'index'])->name('admin.accounting.transfers.index');
-            Route::get('/transfers/create', [BankTransferController::class, 'create'])->name('admin.accounting.transfers.create');
             Route::post('/transfers', [BankTransferController::class, 'store'])->name('admin.accounting.transfers.store');
 
             // Customers

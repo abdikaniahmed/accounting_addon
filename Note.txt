@@ -40,3 +40,30 @@ Dynamic pagination or search
 Print/PDF support like other modules
 
 Or shall I move on to the VendorController?
+
+
+
+
+
+
+
+
+2. Controllers to Update
+Replace the current whereHas('accountGroup', fn($q) => $q->where('name', ...)) logic with Account::money():
+
+BankAccountController
+
+In index() and create() where you pull candidate accounts for linking banks .
+
+BankTransferController
+
+In both index() and create() account dropdown queries .
+
+QuickExpenseController
+
+In create() and edit() when populating the payment account dropdown .
+
+3. Views to Update
+Chart of Accounts create/edit form: Add a checkbox for “Is money account?” so admins can flag bank/cash/wallet accounts directly.
+
+Account import logic: Allow an optional “Is Money” column to set the flag when importing accounts.

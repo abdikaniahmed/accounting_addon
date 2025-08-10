@@ -81,6 +81,11 @@
       "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
     },
 
+        {
+      "from_directory": "app/Services/JournalService.php",
+      "to_directory": "app/Services/JournalService.php"
+    },
+
     {
       "from_directory": "app/Models/Account.php",
       "to_directory": "app/Models/Accounting/Account.php"

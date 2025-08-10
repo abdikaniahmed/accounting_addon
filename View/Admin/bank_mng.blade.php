@@ -17,7 +17,6 @@
     </div>
 </div>
 
-
 <div class="card">
     <div class="card-body">
         <table class="table table-bordered table-striped table-sm mb-0">
@@ -35,7 +34,7 @@
             </thead>
             <tbody>
                 @forelse($bankAccounts as $bank)
-                <tr>
+                <tr id="row_{{ $bank->id }}">
                     <td>{{ $bank->account->code ?? '' }} - {{ $bank->account->name ?? '' }}</td>
                     <td>{{ $bank->bank_name }}</td>
                     <td>{{ $bank->account_number }}</td>
@@ -47,13 +46,13 @@
                             {{ number_format($bank->calculated_balance, 2) }}
                         </a>
                     </td>
-
                     <td class="text-center">
-                        <form action="{{ route('admin.accounting.bank_account.destroy', $bank->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-danger"><i class="bx bx-trash"></i></button>
-                        </form>
+                        {{-- SweetAlert delete (ajax) --}}
+                        <button class="btn btn-sm btn-danger"
+                            onclick="delete_row('accounting/bank-accounts/', {{ $bank->id }})" data-toggle="tooltip"
+                            title="{{ __('Delete') }}">
+                            <i class="bx bx-trash"></i>
+                        </button>
                     </td>
                 </tr>
                 @empty
@@ -124,49 +123,6 @@
 @endsection
 
 @push('script')
-<script>
-$(document).ready(function() {
-    // Initialize Select2 on page load
-    $('.select2').select2({
-        width: '100%'
-    });
-
-    // Re-init Select2 when modal shown (fix for modal issues)
-    $('#addBankModal').on('shown.bs.modal', function() {
-        $(this).find('.select2').select2({
-            dropdownParent: $('#addBankModal'),
-            width: '100%'
-        });
-    });
-
-    // Handle AJAX form submission
-    $('#bankForm').on('submit', function(e) {
-        e.preventDefault();
-
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: $(this).serialize(),
-            beforeSend: function() {
-                $('button[type="submit"]').attr('disabled', true);
-            },
-            success: function(res) {
-                if (res.status === 'success') {
-                    location.reload();
-                } else {
-                    alert(res.message || 'Something went wrong.');
-                }
-            },
-            error: function(xhr) {
-                let errors = xhr.responseJSON.errors || {};
-                let messages = Object.values(errors).flat().join('\n');
-                alert(messages);
-            },
-            complete: function() {
-                $('button[type="submit"]').removeAttr('disabled');
-            }
-        });
-    });
-});
-</script>
+{{-- SweetAlert delete helper --}}
+@include('admin.common.delete-ajax')
 @endpush

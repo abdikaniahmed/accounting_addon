@@ -7,6 +7,11 @@
 @section('main-content')
 <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">{{ __('Bank Balance Transfer') }}</h5>
+    <div>
+        <a href="{{ route('admin.accounting.bank_accounts.index') }}" class="btn btn-sm btn-secondary">
+            <i class="las la-university"></i> {{ __('Manage Bank Accounts') }}
+        </a>
+    </div>
 </div>
 
 <div class="card">
@@ -24,9 +29,7 @@
                     <select name="from_account_id" class="form-control select2" required>
                         <option value="">{{ __('Select Account') }}</option>
                         @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}">
-                            {{ $acc->name }}{{ $acc->account_number ? ' - ' . $acc->account_number : '' }}
-                        </option>
+                        <option value="{{ $acc->id }}">{{ $acc->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -36,9 +39,7 @@
                     <select name="to_account_id" class="form-control select2" required>
                         <option value="">{{ __('Select Account') }}</option>
                         @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}">
-                            {{ $acc->name }}{{ $acc->account_number ? ' - ' . $acc->account_number : '' }}
-                        </option>
+                        <option value="{{ $acc->id }}">{{ $acc->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -110,12 +111,13 @@
 @endsection
 
 @push('script')
-<!-- Ensure Select2 JS and CSS are loaded globally or here -->
 <script>
-$(document).ready(function() {
+$(function() {
     $('.select2').select2({
         width: '100%'
     });
 });
 </script>
+
+@include('admin.common.delete-ajax')
 @endpush
