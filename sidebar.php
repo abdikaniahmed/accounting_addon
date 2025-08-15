@@ -45,7 +45,7 @@ hasPermission('accounting_journal_read')))
         </li>
         <li class="@yield('bank_mng')">
             <a class="nav-link" href="{{ route('admin.accounting.bank_accounts.index') }}">
-                <i class="bx bx-building-bank"></i> <span>{{ __('Bank') }}</span>
+                <i class="bx bx-building"></i> <span>{{ __('Bank') }}</span>
             </a>
         </li>
         <li class="@yield('customers')">
@@ -61,6 +61,16 @@ hasPermission('accounting_journal_read')))
         <li class="@yield('quick_expenses')">
             <a class="nav-link" href="{{ route('admin.accounting.quick_expenses.index') }}">
                 <i class="bx bx-wallet"></i> <span>{{ __('Quick Expenses') }}</span>
+            </a>
+        </li>
+        <li class="@yield('bills')">
+            <a class="nav-link" href="{{ route('admin.accounting.bills.index') }}">
+                <i class="bx bx-file"></i> <span>{{ __('Bills') }}</span>
+            </a>
+        </li>
+        <li class="@yield('bill_payments')">
+            <a class="nav-link" href="{{ route('admin.accounting.bill_payments.index') }}">
+                <i class="bx bx-credit-card"></i> <span>{{ __('Bill Payments') }}</span>
             </a>
         </li>
     </ul>

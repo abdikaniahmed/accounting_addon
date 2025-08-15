@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\Addons\BankTransferController;
 use App\Http\Controllers\Admin\Addons\CustomerController;
 use App\Http\Controllers\Admin\Addons\VendorController;
 use App\Http\Controllers\Admin\Addons\QuickExpensesController;
+use App\Http\Controllers\Admin\Addons\BillController;
+use App\Http\Controllers\Admin\Addons\BillPaymentController;
 
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
@@ -105,6 +107,19 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/quick-expenses/{id}/edit', [QuickExpensesController::class, 'edit'])->name('admin.accounting.quick_expenses.edit');
             Route::put('/quick-expenses/{id}', [QuickExpensesController::class, 'update'])->name('admin.accounting.quick_expenses.update');
             Route::delete('/quick-expenses/{id}', [QuickExpensesController::class, 'destroy'])->name('admin.accounting.quick_expenses.destroy');
+
+            // Bills
+            Route::get('/bills',              [BillController::class,'index'])->name('admin.accounting.bills.index');
+            Route::get('/bills/create',       [BillController::class,'create'])->name('admin.accounting.bills.create');
+            Route::post('/bills',             [BillController::class,'store'])->name('admin.accounting.bills.store');
+            Route::get('/bills/{bill}/edit',  [BillController::class,'edit'])->name('admin.accounting.bills.edit');
+            Route::put('/bills/{bill}',       [BillController::class,'update'])->name('admin.accounting.bills.update');
+            Route::delete('/bills/{bill}',    [BillController::class,'destroy'])->name('admin.accounting.bills.destroy');
+
+            // Bill payments (sidebar needs an index page too)
+            Route::get('/bill-payments',      [BillPaymentController::class,'index'])->name('admin.accounting.bill_payments.index');
+            Route::get('/bills/{bill}/pay',   [BillPaymentController::class,'create'])->name('admin.accounting.bills.pay.create');
+            Route::post('/bills/{bill}/pay',  [BillPaymentController::class,'store'])->name('admin.accounting.bills.pay.store');
 
         });
     });

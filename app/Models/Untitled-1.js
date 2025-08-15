@@ -1,7 +1,25 @@
-{
+
+ Directors --> 
+
+app\Controllers\Admin\BillController.php
+app\Controllers\Admin\BillPaymentController.php
+
+app/Models/Bill.php
+app\Models\BillItem.php
+
+View\Admin\bill_pay.blade.php
+View\Admin\bills_form.blade.php
+View\Admin\bills_index.blade.php
+
+
+Please add in Config.json  --> put same style as before Directors place Controllers, Place of Models, and Place of Views
+
+
+
+then add update Config.json --> {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.4.1",
+  "version": "1.4.0",
   "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
@@ -71,14 +89,6 @@
       "to_directory": "app/Http/Controllers/Admin/Addons/QuickExpensesController.php"
     },
 
-    {
-      "from_directory": "app/Controllers/Admin/BillController.php",
-      "to_directory": "app/Http/Controllers/Admin/Addons/BillController.php"
-    },
-    {
-      "from_directory": "app/Controllers/Admin/BillPaymentController.php",
-      "to_directory": "app/Http/Controllers/Admin/Addons/BillPaymentController.php"
-    },
 
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
@@ -88,8 +98,7 @@
       "from_directory": "app/Repositories/AccountingInterface.php",
       "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
     },
-
-    {
+ {
       "from_directory": "app/Services/JournalService.php",
       "to_directory": "app/Services/JournalService.php"
     },
@@ -102,6 +111,8 @@
       "from_directory": "app/Models/AccountGroup.php",
       "to_directory": "app/Models/Accounting/AccountGroup.php"
     },
+
+
     {
       "from_directory": "app/Models/JournalEntry.php",
       "to_directory": "app/Models/Accounting/JournalEntry.php"
@@ -119,24 +130,11 @@
       "to_directory": "app/Models/Accounting/QuickExpense.php"
     },
 
-    {
-      "from_directory": "app/Models/Bill.php",
-      "to_directory": "app/Models/Accounting/Bill.php"
-    },
-    {
-      "from_directory": "app/Models/BillItem.php",
-      "to_directory": "app/Models/Accounting/BillItem.php"
-    },
-    {
-      "from_directory": "app/Models/BillPayment.php",
-      "to_directory": "app/Models/Accounting/BillPayment.php"
-    },
-
-
+ 
     {
       "from_directory": "View/Admin/journal_form.blade.php",
       "to_directory": "resources/views/addons/accounting/journal_form.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/journal_show.blade.php",
       "to_directory": "resources/views/addons/accounting/journal_show.blade.php"
@@ -149,7 +147,7 @@
       "from_directory": "View/Admin/account_form.blade.php",
       "to_directory": "resources/views/addons/accounting/account_form.blade.php"
     },
-    {
+     {
       "from_directory": "View/Admin/ledger_summary.blade.php",
       "to_directory": "resources/views/addons/accounting/ledger_summary.blade.php"
     },
@@ -160,7 +158,7 @@
     {
       "from_directory": "View/Admin/account_groups_create.blade.php",
       "to_directory": "resources/views/addons/accounting/account_groups_create.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/account_groups_edit.blade.php",
       "to_directory": "resources/views/addons/accounting/account_groups_edit.blade.php"
@@ -168,43 +166,43 @@
     {
       "from_directory": "View/Admin/account_groups_index.blade.php",
       "to_directory": "resources/views/addons/accounting/account_groups_index.blade.php"
-    },
-    {
+    }, 
+     {
       "from_directory": "View/Admin/account_groups_import.blade.php",
       "to_directory": "resources/views/addons/accounting/account_groups_import.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/chart_of_accounts_import.blade.php",
       "to_directory": "resources/views/addons/accounting/chart_of_accounts_import.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/balance_sheet_print.blade.php",
       "to_directory": "resources/views/addons/accounting/balance_sheet_print.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/balance_sheet_pdf.blade.php",
       "to_directory": "resources/views/addons/accounting/balance_sheet_pdf.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/profit_loss.blade.php",
       "to_directory": "resources/views/addons/accounting/profit_loss.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/profit_loss_monthly.blade.php",
       "to_directory": "resources/views/addons/accounting/profit_loss_monthly.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/profit_loss_pdf.blade.php",
       "to_directory": "resources/views/addons/accounting/profit_loss_pdf.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/profit_loss_print.blade.php",
       "to_directory": "resources/views/addons/accounting/profit_loss_print.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/bank_mng.blade.php",
       "to_directory": "resources/views/addons/accounting/bank_mng.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/bank_transfer.blade.php",
       "to_directory": "resources/views/addons/accounting/bank_transfer.blade.php"
@@ -212,54 +210,35 @@
     {
       "from_directory": "View/Admin/customers_create.blade.php",
       "to_directory": "resources/views/addons/accounting/customers_create.blade.php"
-    },
+    }, 
     {
       "from_directory": "View/Admin/customers_index.blade.php",
       "to_directory": "resources/views/addons/accounting/customers_index.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/customers_edit.blade.php",
       "to_directory": "resources/views/addons/accounting/customers_edit.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/vendors_index.blade.php",
       "to_directory": "resources/views/addons/accounting/vendors_index.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/vendors_create.blade.php",
       "to_directory": "resources/views/addons/accounting/vendors_create.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/vendors_edit.blade.php",
       "to_directory": "resources/views/addons/accounting/vendors_edit.blade.php"
-    },
-    {
+    },  
+      {
       "from_directory": "View/Admin/quick_expenses_form.blade.php",
       "to_directory": "resources/views/addons/accounting/quick_expenses_form.blade.php"
-    },
+    },  
     {
       "from_directory": "View/Admin/quick_expenses_index.blade.php",
       "to_directory": "resources/views/addons/accounting/quick_expenses_index.blade.php"
-    },
-
-    {
-      "from_directory": "View/Admin/bills_index.blade.php",
-      "to_directory": "resources/views/addons/accounting/bills_index.blade.php"
-    },
-    {
-      "from_directory": "View/Admin/bill_payments_index.blade.php",
-      "to_directory": "resources/views/addons/accounting/bill_payments_index.blade.php"
-    },
-
-
-    {
-      "from_directory": "View/Admin/bills_form.blade.php",
-      "to_directory": "resources/views/addons/accounting/bills_form.blade.php"
-    },
-    {
-      "from_directory": "View/Admin/bill_pay.blade.php",
-      "to_directory": "resources/views/addons/accounting/bill_pay.blade.php"
-    },
+    },  
 
     {
       "from_directory": "routes/accounting-system.php",
@@ -273,5 +252,6 @@
       "from_directory": "files/chart_of_accounts_import_sample.xlsx",
       "to_directory": "public/excel/chart_of_accounts_import_sample.xlsx"
     }
+
   ]
 }

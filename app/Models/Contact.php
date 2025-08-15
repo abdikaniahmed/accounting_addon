@@ -5,50 +5,45 @@ namespace App\Models\Accounting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class QuickExpense extends Model
+class Contact extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'acc_quick_expenses';
+    protected $table = 'acc_contacts';
 
     protected $fillable = [
-        'title',
-        'description',
-        'account_id',
-        'payment_account_id',
-        'amount',
-        'bill_file',
-        'date',
-        'reference',
-        'vendor',
+        'type',     // 'customer' or 'vendor'
+        'name',
+        'email',
+        'phone',
+        'address',
     ];
 
     public $timestamps = true;
 
-    // 🔸 Relationships
-    public function expenseAccount()
-    {
-        return $this->belongsTo(Account::class, 'account_id');
-    }
-
-    public function paymentAccount()
-    {
-        return $this->belongsTo(Account::class, 'payment_account_id');
-    }
-
     // 🔸 Scopes
+    public function scopeType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
     public function scopeSearch($query, $term)
     {
         return $query->where(function ($q) use ($term) {
-            $q->where('title', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%")
-              ->orWhere('reference', 'like', "%{$term}%")
-              ->orWhere('vendor', 'like', "%{$term}%");
+            $q->where('name', 'like', "%{$term}%")
+              ->orWhere('email', 'like', "%{$term}%")
+              ->orWhere('phone', 'like', "%{$term}%");
         });
     }
 
-    public function scopeBetweenDates($query, $start, $end)
+    // 🔸 Getters (optional helpers)
+    public function isCustomer()
     {
-        return $query->whereBetween('date', [$start, $end]);
+        return $this->type === 'customer';
+    }
+
+    public function isVendor()
+    {
+        return $this->type === 'vendor';
     }
 }
