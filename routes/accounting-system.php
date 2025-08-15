@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\Addons\VendorController;
 use App\Http\Controllers\Admin\Addons\QuickExpensesController;
 use App\Http\Controllers\Admin\Addons\BillController;
 use App\Http\Controllers\Admin\Addons\BillPaymentController;
-
+use App\Http\Controllers\Admin\Addons\TrialBalanceController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -121,6 +121,7 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/bills/{bill}/pay',   [BillPaymentController::class,'create'])->name('admin.accounting.bills.pay.create');
             Route::post('/bills/{bill}/pay',  [BillPaymentController::class,'store'])->name('admin.accounting.bills.pay.store');
 
+            Route::get('/trial-balance', [TrialBalanceController::class, 'index'])->name('admin.accounting.trial_balance');
         });
     });
 });

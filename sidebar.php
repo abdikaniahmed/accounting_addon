@@ -33,6 +33,12 @@ hasPermission('accounting_journal_read')))
                 <i class="bx bx-spreadsheet"></i> <span>{{ __('Ledger Summary') }}</span>
             </a>
         </li>
+        <li class="@yield('trial_balance')">
+            <a class="nav-link" href="{{ route('admin.accounting.trial_balance') }}">
+                <i class="bx bx-buoy"></i> <span>{{ __('Trial Balance') }}</span>
+            </a>
+        </li>
+
         <li class="@yield('balance_sheet')">
             <a class="nav-link" href="{{ route('admin.accounting.balance_sheet') }}">
                 <i class="bx bx-line-chart"></i> <span>{{ __('Balance Sheet') }}</span>

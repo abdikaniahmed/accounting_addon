@@ -79,7 +79,12 @@
       "from_directory": "app/Controllers/Admin/BillPaymentController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/BillPaymentController.php"
     },
+    {
+      "from_directory": "app/Controllers/Admin/TrialBalanceController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/TrialBalanceController.php"
+    },
 
+    
     {
       "from_directory": "app/Repositories/AccountingRepository.php",
       "to_directory": "app/Repositories/Admin/Addon/AccountingRepository.php"
@@ -249,6 +254,10 @@
     {
       "from_directory": "View/Admin/bill_payments_index.blade.php",
       "to_directory": "resources/views/addons/accounting/bill_payments_index.blade.php"
+    },
+    {
+      "from_directory": "View/Admin/trial_balance.blade.php",
+      "to_directory": "resources/views/addons/accounting/trial_balance.blade.php"
     },
 
 
