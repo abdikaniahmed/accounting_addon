@@ -24,6 +24,13 @@
                 <input type="date" name="end_date" value="{{ $end }}" class="form-control">
             </div>
             <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check mr-3">
+                    <input type="checkbox" name="show_zero" value="1" class="form-check-input" id="showZero"
+                        {{ $showZero ? 'checked' : '' }}>
+                    <label for="showZero" class="form-check-label">{{ __('Show zero rows') }}</label>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
                 <button class="btn btn-primary mr-2">{{ __('Run') }}</button>
                 <a href="{{ route('admin.accounting.trial_balance') }}" class="btn btn-light">{{ __('Reset') }}</a>
             </div>
@@ -50,7 +57,12 @@
                 @forelse($rows as $r)
                 <tr>
                     <td>{{ $r->code }}</td>
-                    <td>{{ $r->name }}</td>
+                    <td>
+                        <a
+                            href="{{ route('admin.accounting.ledger', ['account_id' => $r->id, 'start_date' => $start, 'end_date' => $end]) }}">
+                            {{ $r->name }}
+                        </a>
+                    </td>
                     <td class="text-right">{{ number_format($r->open_debit,2) }}</td>
                     <td class="text-right">{{ number_format($r->open_credit,2) }}</td>
                     <td class="text-right">{{ number_format($r->mov_debit,2) }}</td>
