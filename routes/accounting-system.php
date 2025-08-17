@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Addons\QuickExpensesController;
 use App\Http\Controllers\Admin\Addons\BillController;
 use App\Http\Controllers\Admin\Addons\BillPaymentController;
 use App\Http\Controllers\Admin\Addons\TrialBalanceController;
+use App\Http\Controllers\Admin\Addons\AssetController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -122,6 +123,14 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::post('/bills/{bill}/pay',  [BillPaymentController::class,'store'])->name('admin.accounting.bills.pay.store');
 
             Route::get('/trial-balance', [TrialBalanceController::class, 'index'])->name('admin.accounting.trial_balance');
+
+            // Assets
+            Route::get('/assets',            [AssetController::class,'index'])->name('admin.accounting.assets.index');
+            Route::get('/assets/create',     [AssetController::class,'create'])->name('admin.accounting.assets.create');
+            Route::post('/assets',           [AssetController::class,'store'])->name('admin.accounting.assets.store');
+            Route::get('/assets/{asset}/edit',[AssetController::class,'edit'])->name('admin.accounting.assets.edit');
+            Route::put('/assets/{asset}',    [AssetController::class,'update'])->name('admin.accounting.assets.update');
+            Route::delete('/assets/{asset}', [AssetController::class,'destroy'])->name('admin.accounting.assets.destroy');
         });
     });
 });

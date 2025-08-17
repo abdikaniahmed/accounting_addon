@@ -38,7 +38,6 @@ hasPermission('accounting_journal_read')))
                 <i class="bx bx-buoy"></i> <span>{{ __('Trial Balance') }}</span>
             </a>
         </li>
-
         <li class="@yield('balance_sheet')">
             <a class="nav-link" href="{{ route('admin.accounting.balance_sheet') }}">
                 <i class="bx bx-line-chart"></i> <span>{{ __('Balance Sheet') }}</span>
@@ -79,6 +78,12 @@ hasPermission('accounting_journal_read')))
                 <i class="bx bx-credit-card"></i> <span>{{ __('Bill Payments') }}</span>
             </a>
         </li>
+        <li class="@yield('assets')">
+            <a class="nav-link" href="{{ route('admin.accounting.assets.index') }}">
+                <i class="bx bx-cube"></i> <span>{{ __('Assets') }}</span>
+            </a>
+        </li>
+
     </ul>
 </li>
 @endif

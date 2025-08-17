@@ -83,6 +83,10 @@
       "from_directory": "app/Controllers/Admin/TrialBalanceController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/TrialBalanceController.php"
     },
+    {
+      "from_directory": "app/Controllers/Admin/AssetController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/AssetController.php"
+    },
 
     
     {
@@ -135,6 +139,10 @@
     {
       "from_directory": "app/Models/BillPayment.php",
       "to_directory": "app/Models/Accounting/BillPayment.php"
+    },
+    {
+      "from_directory": "app/Models/Asset.php",
+      "to_directory": "app/Models/Accounting/Asset.php"
     },
 
 
@@ -269,6 +277,15 @@
       "from_directory": "View/Admin/bill_pay.blade.php",
       "to_directory": "resources/views/addons/accounting/bill_pay.blade.php"
     },
+    {
+      "from_directory": "View/Admin/assets_index.blade.php",
+      "to_directory": "resources/views/addons/accounting/assets_index.blade.php"
+    },
+    {
+      "from_directory": "View/Admin/assets_form.blade.php",
+      "to_directory": "resources/views/addons/accounting/assets_form.blade.php"
+    },
+
 
     {
       "from_directory": "routes/accounting-system.php",
