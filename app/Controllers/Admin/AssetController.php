@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Addons;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\Accounting\{Asset, Account};
 use App\Services\JournalService;
 use Illuminate\Http\Request;
@@ -154,4 +155,17 @@ class AssetController extends Controller
             'message' => __('Asset deleted'),
         ]);
     }
+    
+    public function postDepreciation(Request $request)
+    {
+        $date = $request->input('date'); // optional YYYY-MM-DD
+        $args = $date ? ['--date' => $date] : [];
+
+        // Run synchronously; command itself is idempotent via the guard table
+        Artisan::call('depreciation:post', $args);
+
+        Toastr::success(__('Depreciation posted successfully.'));
+        return back();
+    }
+
 }

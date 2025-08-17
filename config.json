@@ -84,6 +84,10 @@
       "to_directory": "app/Http/Controllers/Admin/Addons/TrialBalanceController.php"
     },
     {
+      "from_directory": "app/Controllers/Admin/AssetDepreciationController.php",
+      "to_directory": "app/Http/Controllers/Admin/Addons/AssetDepreciationController.php"
+    },
+    {
       "from_directory": "app/Controllers/Admin/AssetController.php",
       "to_directory": "app/Http/Controllers/Admin/Addons/AssetController.php"
     },
@@ -98,6 +102,10 @@
       "to_directory": "app/Repositories/Interfaces/Admin/Addon/AccountingInterface.php"
     },
 
+    {
+      "from_directory": "app/Commands/DepreciationPost.php",
+      "to_directory": "app/Console/Commands/DepreciationPost.php"
+    },
     {
       "from_directory": "app/Services/JournalService.php",
       "to_directory": "app/Services/JournalService.php"

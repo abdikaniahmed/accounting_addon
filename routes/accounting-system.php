@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Addons\BillController;
 use App\Http\Controllers\Admin\Addons\BillPaymentController;
 use App\Http\Controllers\Admin\Addons\TrialBalanceController;
 use App\Http\Controllers\Admin\Addons\AssetController;
+use App\Http\Controllers\Admin\Addons\AssetDepreciationController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -131,6 +132,14 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/assets/{asset}/edit',[AssetController::class,'edit'])->name('admin.accounting.assets.edit');
             Route::put('/assets/{asset}',    [AssetController::class,'update'])->name('admin.accounting.assets.update');
             Route::delete('/assets/{asset}', [AssetController::class,'destroy'])->name('admin.accounting.assets.destroy');
+
+               // Manual, single-month for all eligible assets
+            Route::post('/assets/depreciation/run', [AssetDepreciationController::class,'runForMonth'])
+                ->name('admin.accounting.assets.depr.run');
+
+            // Manual, single asset for a month (optional button near edit)
+            Route::post('/assets/{asset}/depreciation', [AssetDepreciationController::class,'runForAsset'])
+                ->name('admin.accounting.assets.depr.asset');
         });
     });
 });
