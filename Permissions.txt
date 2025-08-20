@@ -1,0 +1,7 @@
+
+database/seeders/DatabaseSeeder.php
+use Database\Seeders\Admin\Addon\AccountingPermissionSeeder;
+
+$this->call(PermissionSeeder::class);
+$this->call(AccountingPermissionSeeder::class);
+

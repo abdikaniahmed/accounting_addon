@@ -306,6 +306,12 @@
     {
       "from_directory": "files/chart_of_accounts_import_sample.xlsx",
       "to_directory": "public/excel/chart_of_accounts_import_sample.xlsx"
+    },
+
+    
+    {
+      "from_directory": "database/AccountingPermissionSeeder.php",
+      "to_directory": "Database/Seeders/Admin/Addon/AccountingPermissionSeeder.php"
     }
   ]
 }
