@@ -22,11 +22,11 @@ class Kernel extends ConsoleKernel
             return false;
         })->everyFifteenMinutes();
 
-        // New: depreciation at month end 00:30 (app timezone)
+        // Recommended: run on 1st and let command post for the month implied by --date (or default to last month end)
         $schedule->command('depreciation:post')
-            ->when(fn() => (bool) (config('accounting.auto_depreciation', true))) // or use a DB setting
-            ->monthlyOn(now()->endOfMonth()->day, '00:30');
-    }
+            ->when(fn () => addon_is_activated('accounting_addon') && (int) settingHelper('accounting_depr_auto') === 1)
+            ->monthlyOn(1, '00:30');
+        }
 
     protected function commands()
     {

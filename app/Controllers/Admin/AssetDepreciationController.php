@@ -19,16 +19,15 @@ class AssetDepreciationController extends Controller
     {
         $request->validate(['period' => ['required','date_format:Y-m']]);
 
-        [$periodStart, $periodEnd] = $this->periodBounds($request->period);
+        [$periodStart, $periodEnd, $periodKey] = $this->periodBounds($request->period);
         $count = 0;
 
-        // fetch active assets that can depreciate
         $assets = Asset::where('is_active', true)
             ->where('depreciation_method', 'straight_line')
             ->get();
 
         foreach ($assets as $asset) {
-            $ok = $this->postOne($asset, $periodStart, $periodEnd, $journal);
+            $ok = $this->postOne($asset, $periodStart, $periodEnd, $periodKey, $journal);
             if ($ok) $count++;
         }
 
@@ -40,9 +39,9 @@ class AssetDepreciationController extends Controller
     public function runForAsset(Request $request, Asset $asset, JournalService $journal)
     {
         $request->validate(['period' => ['required','date_format:Y-m']]);
-        [$periodStart, $periodEnd] = $this->periodBounds($request->period);
+        [$periodStart, $periodEnd, $periodKey] = $this->periodBounds($request->period);
 
-        if ($this->postOne($asset, $periodStart, $periodEnd, $journal)) {
+        if ($this->postOne($asset, $periodStart, $periodEnd, $periodKey, $journal)) {
             Toastr::success(__('Depreciation posted.'));
         } else {
             Toastr::warning(__('Nothing to post (maybe already posted or not eligible).'));
@@ -57,25 +56,26 @@ class AssetDepreciationController extends Controller
     {
         $start = Carbon::createFromFormat('Y-m-d', $ym.'-01')->startOfDay();
         $end   = (clone $start)->endOfMonth()->endOfDay();
-        return [$start, $end];
+        $key   = $start->format('Y-m'); // normalized key like "2025-08"
+        return [$start, $end, $key];
     }
 
     /** Core posting logic (idempotent). Returns true if a journal was posted. */
-    private function postOne(Asset $asset, Carbon $periodStart, Carbon $periodEnd, JournalService $journal): bool
+    private function postOne(Asset $asset, Carbon $periodStart, Carbon $periodEnd, string $periodKey, JournalService $journal): bool
     {
-        // eligibility
         if (!$asset->is_active || $asset->depreciation_method !== 'straight_line') {
             return false;
         }
-        // if asset purchased after this month -> skip
+
+        // skip assets purchased after this period
         if (Carbon::parse($asset->purchase_date)->startOfDay()->gt($periodEnd)) {
             return false;
         }
 
-        // prevent duplicates (unique by asset+period_start)
+        // prevent duplicates (unique by asset+period)
         $exists = DB::table('acc_asset_depreciations')
             ->where('asset_id', $asset->id)
-            ->whereDate('period_start', $periodStart->toDateString())
+            ->where('period', $periodKey)
             ->exists();
         if ($exists) return false;
 
@@ -93,12 +93,13 @@ class AssetDepreciationController extends Controller
             ->where('asset_id', $asset->id)
             ->sum('amount');
 
-        // remaining amount still to depreciate
         $remaining = max(0, round($depreciable - $already, 2));
         if ($remaining <= 0) return false;
 
         $perMonth = round($depreciable / $monthsTotal, 2);
         $amount   = min($perMonth, $remaining);
+
+        if ($amount <= 0) return false;
 
         // post journal (date = periodEnd)
         $entry = $journal->create(
@@ -106,7 +107,7 @@ class AssetDepreciationController extends Controller
                 'date'        => $periodEnd->toDateString(),
                 'type'        => 'depreciation',
                 'reference'   => $asset->asset_code,
-                'description' => 'Depreciation - '.$asset->asset_name.' ('.$periodStart->format('Y-m').')',
+                'description' => 'Depreciation - '.$asset->asset_name.' ('.$periodKey.')',
             ],
             [
                 ['account_id' => $expenseId, 'debit' => $amount, 'credit' => 0,       'memo' => 'Depreciation expense'],
@@ -114,10 +115,10 @@ class AssetDepreciationController extends Controller
             ]
         );
 
-        // record to our tracking table
+        // record to guard table
         DB::table('acc_asset_depreciations')->insert([
             'asset_id'         => $asset->id,
-            'period_start'     => $periodStart->toDateString(),
+            'period'           => $periodKey, // normalized YYYY-MM
             'amount'           => $amount,
             'journal_entry_id' => $entry->id,
             'created_at'       => now(),
@@ -129,7 +130,6 @@ class AssetDepreciationController extends Controller
 
     private function resolveDepreciationExpenseAccountId(): ?int
     {
-        // prefer explicit naming; adapt if you store a setting elsewhere
         return Account::where('type','expense')
             ->where(function($q){
                 $q->where('name','like','%depreciation%')
@@ -140,7 +140,6 @@ class AssetDepreciationController extends Controller
 
     private function resolveAccumulatedDepreciationAccountId(): ?int
     {
-        // contra-asset account often named "Accumulated Depreciation"
         return Account::where('type','asset')
             ->where(function($q){
                 $q->where('name','like','%accumulated depreciation%')

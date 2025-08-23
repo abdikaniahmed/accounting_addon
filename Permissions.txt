@@ -1,7 +1,77 @@
+routes 
+app\Providers\RouteServiceProvider.php
+
+            $this->mapAccountingRoutes(); // for accounting Additional $this->routes(function () {
+   
+    /// For Accounting 
+    protected function mapAccountingRoutes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/accounting-system.php'));
+    }
+
+
+
+//depreciation
+
+Kannel add 
+
+    // Recommended: run on 1st and let command post for the month implied by --date (or default to last month end)
+    $schedule->command('depreciation:post')
+        ->when(fn () => addon_is_activated('accounting_addon') && (int) settingHelper('accounting_depr_auto') === 1)
+        ->monthlyOn(1, '00:30');
+
+// app/Console/Commands/AllClear.php (signature + call)
+protected $signature = 'all:clear 
+    {--with-depr : Also post monthly depreciation}
+    {--period= : Target period in YYYY-MM (defaults to current month)}
+    {--dry-run : Preview actions without changing data}';
+
+public function handle()
+{
+    // ... your clear code ...
+
+    if ($this->option('with-depr')) {
+        if (!addon_is_activated('accounting_addon') || (int) settingHelper('accounting_depr_auto') !== 1) {
+            $this->warn('Depreciation skipped (addon disabled or auto off).');
+        } else {
+            $args = [];
+            if ($p = $this->option('period')) $args['--date'] = $p.'-28';
+            if ($this->option('dry-run'))    $args['--dry-run'] = true;
+
+            $this->info('Running depreciation:post …');
+            \Artisan::call('depreciation:post', $args);
+            $this->line(trim(\Artisan::output()));
+        }
+    }
+
+    $this->info('All Clear completed.');
+    return 0;
+}
+
+
 
 database/seeders/DatabaseSeeder.php
 use Database\Seeders\Admin\Addon\AccountingPermissionSeeder;
 
 $this->call(PermissionSeeder::class);
 $this->call(AccountingPermissionSeeder::class);
+
+# commands
+php artisan db:seed --class=AccountingPermissionSeeder
+
+
+
+
+
+//for Audit 
+
+commands
+
+# force an up-to-date 2.x Diactoros (still satisfies ^2.4)
+composer require laminas/laminas-diactoros:^2.25 --with-all-dependencies
+
+# now add auditing
+composer require owen-it/laravel-auditing
 
