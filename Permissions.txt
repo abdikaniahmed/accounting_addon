@@ -75,3 +75,20 @@ composer require laminas/laminas-diactoros:^2.25 --with-all-dependencies
 # now add auditing
 composer require owen-it/laravel-auditing
 
+
+---- Audit.php edit
+// config\audit.php
+    // ✅ Correct for v13.x
+    'user' => [
+        'morph_prefix' => 'user',
+        'guards'       => ['admin', 'vendor', 'customer', 'web', 'api'],
+        'resolver'     => \App\Support\Audit\MultiGuardUserResolver::class,
+    ],
+
+Mual for all Audit files 
+
+
+   {
+      "from_directory": "app/Support/Audit/MultiGuardUserResolver.php",
+      "to_directory": "app/Support/Audit/MultiGuardUserResolver.php"
+    },

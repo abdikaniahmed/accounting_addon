@@ -17,7 +17,8 @@ use App\Http\Controllers\Admin\Addons\{
     BillPaymentController,
     TrialBalanceController,
     AssetController,
-    AssetDepreciationController
+    AssetDepreciationController,
+    AuditController
 };
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
@@ -348,6 +349,15 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::post('/assets/{asset}/depreciation', [AssetDepreciationController::class,'runForAsset'])
                 ->name('admin.accounting.assets.depr.asset')
                 ->middleware('PermissionCheck:accounting_asset_depr_post');
+            
+            // Audit                         
+            Route::get('/audits', [AuditController::class, 'index'])
+                ->name('admin.audits.index')
+                ->middleware('PermissionCheck:audit_read');
+
+            Route::get('/audits/{audit}', [AuditController::class, 'show'])
+            ->name('admin.audits.show')
+            ->middleware('PermissionCheck:audit_read');
         });
     });
 });

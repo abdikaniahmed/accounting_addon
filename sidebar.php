@@ -134,6 +134,16 @@
             </a>
         </li>
         @endif
+
+        {{ Audits }}
+        @if(hasPermission('audit_read'))
+        <li class="@yield('audits')">
+            <a class="nav-link" href="{{ route('admin.audits.index') }}">
+                <i class="bx bx-history"></i> <span>{{ __('Audits') }}</span>
+            </a>
+        </li>
+        @endif
+
     </ul>
 </li>
 @endif
