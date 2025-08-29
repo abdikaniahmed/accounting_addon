@@ -1,9 +1,7 @@
 @extends('admin.partials.master')
-{{-- resources/views/admin/audit/index.blade.php --}}
 @section('title') {{ __('Audit Logs') }} @endsection
 
 @section('main-content')
-
 <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">{{ __('Audit Logs') }}</h5>
 </div>
@@ -24,13 +22,13 @@
             <div class="col-md-2">
                 <label class="form-label">{{ __('Model') }}</label>
                 <input type="text" name="model" value="{{ request('model') }}" class="form-control"
-                    placeholder="e.g. Product, Order">
+                    placeholder="e.g. Account, AccountGroup">
             </div>
 
             <div class="col-md-2">
                 <label class="form-label">{{ __('User') }}</label>
                 <input type="text" name="user" value="{{ request('user') }}" class="form-control"
-                    placeholder="name or email">
+                    placeholder="name / email / username">
             </div>
 
             <div class="col-md-2">
@@ -83,24 +81,24 @@
             <tbody>
                 @forelse($audits as $a)
                 @php
-                $u = $a->user;
 
-                // build a friendly display name for Sentinel/Yoori users
+                // Friendly display for Yoori/Sentinel user models
+
+                $u = $a->user;
                 $displayName = 'System';
                 if ($u) {
                 $full = trim(($u->first_name ?? '').' '.($u->last_name ?? ''));
-                $displayName = $u->name
-                ?? ($full !== '' ? $full : null)
-                ?? ($u->full_name ?? null)
-                ?? ($u->username ?? null)
-                ?? ($u->email ?? 'System');
+                $displayName = $full !== '' ? $full : ($u->email ?? 'System');
                 }
 
-                // guard can be stored either as ['_audit_guard' => 'admin'] or as a tag 'guard:admin'
-                $guardFromArray = data_get($a->tags, '_audit_guard');
+
+                // tags column is varchar(255) in DB; may contain JSON or plain/null
+                $tagsRaw = $a->tags; // varchar(255)
+                $tagsArray = is_array($tagsRaw) ? $tagsRaw : (json_decode($tagsRaw ?? '', true) ?: []);
+                $guardFromArray = data_get($tagsArray, '_audit_guard');
                 $guardFromTag = null;
-                if (is_array($a->tags)) {
-                foreach ($a->tags as $tag) {
+                if (is_array($tagsArray)) {
+                foreach ($tagsArray as $tag) {
                 if (is_string($tag) && str_starts_with($tag, 'guard:')) {
                 $guardFromTag = substr($tag, 6);
                 break;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Addons;
 
 use App\Http\Controllers\Controller;
-use App\Models\Accounting\AccountGroup;
+use App\Models\Accounting\AccountGroup;   // ✅ use the model here
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -11,7 +11,11 @@ class AccountGroupController extends Controller
 {
     public function index()
     {
-        $groups = AccountGroup::orderBy('name')->get();
+        // Admin lists ONLY global groups
+        $groups = AccountGroup::whereNull('seller_id')
+                    ->orderBy('name')
+                    ->get();
+
         return view('addons.accounting.account_groups_index', compact('groups'));
     }
 
@@ -23,28 +27,41 @@ class AccountGroupController extends Controller
     public function store(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        AccountGroup::create(['name' => $request->name]);
-        return redirect()->route('admin.accounting.groups.index')->with('success', 'Group created successfully.');
+
+        // Ensure created as global (admin-owned)
+        AccountGroup::create([
+            'name' => $request->name,
+            'seller_id' => null,
+        ]);
+
+        return redirect()->route('admin.accounting.groups.index')
+            ->with('success', 'Group created successfully.');
     }
 
     public function edit($id)
     {
-        $group = AccountGroup::findOrFail($id);
+        // Admin can edit only global groups
+        $group = AccountGroup::whereNull('seller_id')->findOrFail($id);
+
         return view('addons.accounting.account_groups_edit', compact('group'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        $group = AccountGroup::findOrFail($id);
+
+        $group = AccountGroup::whereNull('seller_id')->findOrFail($id);
         $group->update(['name' => $request->name]);
-        return redirect()->route('admin.accounting.groups.index')->with('success', 'Group updated successfully.');
+
+        return redirect()->route('admin.accounting.groups.index')
+            ->with('success', 'Group updated successfully.');
     }
 
     public function destroy($id)
     {
         try {
-            $group = AccountGroup::findOrFail($id);
+            // Admin can delete only global groups
+            $group = AccountGroup::whereNull('seller_id')->findOrFail($id);
             $group->delete();
 
             return response()->json(['message' => __('Group deleted successfully.')], 200);
@@ -64,28 +81,29 @@ class AccountGroupController extends Controller
             'file' => 'required|file|mimes:xlsx,xls,csv',
         ]);
 
-        $path = $request->file('file')->getRealPath();
         $collection = Excel::toCollection(null, $request->file('file'));
-
-        $rows = $collection[0]; // first sheet
+        $rows = $collection[0] ?? collect();
 
         $imported = 0;
-        $skipped = 0;
-        foreach ($rows->skip(1) as $row) {
-            $name = trim($row[0]);
+        $skipped  = 0;
 
-            if (empty($name) || AccountGroup::where('name', $name)->exists()) {
+        foreach ($rows->skip(1) as $row) {
+            $name = trim((string)($row[0] ?? ''));
+
+            if ($name === '' ||
+                AccountGroup::whereNull('seller_id')->where('name', $name)->exists()) {
                 $skipped++;
                 continue;
             }
 
-            AccountGroup::create(['name' => $name]);
+            AccountGroup::create([
+                'name' => $name,
+                'seller_id' => null, // enforce global
+            ]);
             $imported++;
         }
 
         return redirect()->route('admin.accounting.groups.index')
             ->with('success', "$imported imported, $skipped skipped.");
-
     }
-
 }
