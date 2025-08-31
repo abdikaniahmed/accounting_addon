@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Seller\Addons\AccountGroupController as SellerAccountGroupController;
 use App\Http\Controllers\Seller\Addons\SellerAuditController as SellerAuditController;
+use App\Http\Controllers\Seller\Addons\ChartOfAccountController as SellerCoa;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -47,10 +48,20 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             })->name('seller.accounting.groups.sample.download');
 
 
-            //Audit
+            //ChartOfAccounts
+            Route::get('chart-of-accounts',        [SellerCoa::class,'index'])->name('seller.accounting.coa.index');
+            Route::get('chart-of-accounts/create', [SellerCoa::class,'create'])->name('seller.accounting.coa.create');
+            Route::post('chart-of-accounts',       [SellerCoa::class,'store'])->name('seller.accounting.coa.store');
+            Route::get('chart-of-accounts/{id}/edit', [SellerCoa::class,'edit'])->name('seller.accounting.coa.edit');
+            Route::put('chart-of-accounts/{id}',   [SellerCoa::class,'update'])->name('seller.accounting.coa.update');
+            Route::delete('chart-of-accounts/{id}',[SellerCoa::class,'destroy'])->name('seller.accounting.coa.destroy');
 
+            Route::get('chart-of-accounts/import', [SellerCoa::class,'importView'])->name('seller.accounting.coa.import.view');
+            Route::post('chart-of-accounts/import',[SellerCoa::class,'import'])->name('seller.accounting.coa.import');
+
+            //Audit
             Route::get('/audits', [SellerAuditController::class, 'index'])->name('seller.audits.index');
-        Route::get('/audits/{audit}', [SellerAuditController::class, 'show'])->name('seller.audits.show');
+            Route::get('/audits/{audit}', [SellerAuditController::class, 'show'])->name('seller.audits.show');
         });
     });
 });

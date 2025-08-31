@@ -3,30 +3,35 @@
 namespace App\Http\Controllers\Admin\Addons;
 
 use App\Http\Controllers\Controller;
+use App\Models\Accounting\Account;
+use App\Models\Accounting\AccountGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Accounting\Account;
-use App\Models\Accounting\AccountGroup;
 
 class ChartOfAccountController extends Controller
 {
+    /** List ONLY global accounts (admin space) */
     public function index()
     {
-        $accounts = Cache::remember('accounting.accounts', 1440, function () {
-            // (Optional) order money accounts first, then by name
-            return Account::orderByDesc('is_money')->orderBy('name')->get();
+        $accounts = Cache::remember('accounting.admin.accounts', 1440, function () {
+            return Account::onlyGlobal()
+                ->orderByDesc('is_money')
+                ->orderBy('name')
+                ->get();
         });
 
         return view('addons.accounting.chart_of_accounts', compact('accounts'));
     }
 
+    /** Create form (global groups only) */
     public function create()
     {
-        $groups = AccountGroup::orderBy('name')->get();
+        $groups = AccountGroup::onlyGlobal()->orderBy('name')->get();
         return view('addons.accounting.account_form', compact('groups'));
     }
 
+    /** Store a GLOBAL account (seller_id stays NULL) */
     public function store(Request $request)
     {
         $request->validate([
@@ -36,29 +41,38 @@ class ChartOfAccountController extends Controller
             'is_money'         => 'sometimes|boolean',
         ]);
 
+        // Guard: ensure selected group is global as well
+        $groupId = $request->account_group_id;
+        if ($groupId) {
+            AccountGroup::onlyGlobal()->findOrFail($groupId);
+        }
+
         Account::create([
             'name'             => $request->name,
             'type'             => $request->type,
             'code'             => $request->code,
             'is_active'        => $request->has('is_active'),
-            'account_group_id' => $request->account_group_id,
+            'account_group_id' => $groupId,
             'is_money'         => $request->boolean('is_money'),
+            // seller_id intentionally NULL → global
         ]);
 
-        Cache::forget('accounting.accounts');
+        Cache::forget('accounting.admin.accounts');
 
         return redirect()->route('admin.accounting.coa')
             ->with('success', __('Account created successfully.'));
     }
 
+    /** Edit GLOBAL account only */
     public function edit($id)
     {
-        $account = Account::findOrFail($id);
-        $groups  = AccountGroup::orderBy('name')->get();
+        $account = Account::onlyGlobal()->findOrFail($id);
+        $groups  = AccountGroup::onlyGlobal()->orderBy('name')->get();
 
         return view('addons.accounting.account_form', compact('account', 'groups'));
     }
 
+    /** Update GLOBAL account only */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -68,28 +82,36 @@ class ChartOfAccountController extends Controller
             'is_money'         => 'sometimes|boolean',
         ]);
 
-        $account = Account::findOrFail($id);
+        $account = Account::onlyGlobal()->findOrFail($id);
+
+        // Guard: group must be global
+        $groupId = $request->account_group_id;
+        if ($groupId) {
+            AccountGroup::onlyGlobal()->findOrFail($groupId);
+        }
+
         $account->update([
             'name'             => $request->name,
             'type'             => $request->type,
             'code'             => $request->code,
             'is_active'        => $request->has('is_active'),
-            'account_group_id' => $request->account_group_id,
+            'account_group_id' => $groupId,
             'is_money'         => $request->boolean('is_money'),
         ]);
 
-        Cache::forget('accounting.accounts');
+        Cache::forget('accounting.admin.accounts');
 
         return redirect()->route('admin.accounting.coa')
             ->with('success', __('Account updated successfully.'));
     }
 
+    /** Delete GLOBAL account only */
     public function destroy($id)
     {
-        $account = Account::findOrFail($id);
+        $account = Account::onlyGlobal()->findOrFail($id);
         $account->delete();
 
-        Cache::forget('accounting.accounts');
+        Cache::forget('accounting.admin.accounts');
 
         return response()->json(['status' => 'success', 'message' => __('Account deleted successfully.')]);
     }
@@ -99,6 +121,7 @@ class ChartOfAccountController extends Controller
         return view('addons.accounting.chart_of_accounts_import');
     }
 
+    /** Import as GLOBAL (seller_id = NULL) */
     public function import(Request $request)
     {
         $request->validate([
@@ -115,38 +138,44 @@ class ChartOfAccountController extends Controller
             $code    = trim((string)($row[2] ?? ''));
             $group   = trim((string)($row[3] ?? ''));
             $active  = $this->parseBool($row[4] ?? null);
-            $isMoney = $this->parseBool($row[5] ?? null); // NEW: 6th column
+            $isMoney = $this->parseBool($row[5] ?? null);
 
-            if (empty($name) || !in_array($type, ['asset', 'liability', 'equity', 'revenue', 'expense'])) {
+            if (empty($name) || !in_array($type, ['asset','liability','equity','revenue','expense'], true)) {
                 continue;
             }
 
-            $group_id = null;
-            if (!empty($group)) {
-                $groupModel = AccountGroup::firstOrCreate(['name' => $group]);
-                $group_id   = $groupModel->id;
+            // Ensure/resolve GLOBAL group
+            $groupId = null;
+            if ($group !== '') {
+                $groupModel = AccountGroup::onlyGlobal()->where('name', $group)->first();
+                if (!$groupModel) {
+                    $groupModel = AccountGroup::create(['name' => $group]); // seller_id = NULL by default
+                }
+                $groupId = $groupModel->id;
             }
 
-            if (!Account::where('name', $name)->exists()) {
-                Account::create([
-                    'name'             => $name,
-                    'type'             => $type,
-                    'code'             => $code,
-                    'is_active'        => $active,
-                    'account_group_id' => $group_id,
-                    'is_money'         => $isMoney,
-                ]);
-                $imported++;
-            }
+            // Avoid duplicate global names
+            $exists = Account::onlyGlobal()->where('name', $name)->exists();
+            if ($exists) continue;
+
+            Account::create([
+                'name'             => $name,
+                'type'             => $type,
+                'code'             => $code,
+                'is_active'        => $active,
+                'account_group_id' => $groupId,
+                'is_money'         => $isMoney,
+                // seller_id NULL
+            ]);
+            $imported++;
         }
 
-        Cache::forget('accounting.accounts');
+        Cache::forget('accounting.admin.accounts');
 
         return redirect()->route('admin.accounting.coa')
-            ->with('success', __("$imported accounts imported successfully."));
+            ->with('success', __(":n accounts imported successfully.", ['n' => $imported]));
     }
 
-    /** Parse common boolean-ish values (yes/no/true/false/1/0/y/n). */
     private function parseBool($val): bool
     {
         $v = strtolower(trim((string)$val));

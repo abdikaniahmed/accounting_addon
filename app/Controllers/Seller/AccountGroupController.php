@@ -16,7 +16,7 @@ class AccountGroupController extends Controller
     {
         try {
             // Seller sees global(NULL) + own
-            $groups = AccountGroup::visibleForCurrentSeller()
+            $groups = AccountGroup::onlyOwn()
                         ->orderBy('name')
                         ->get();
 

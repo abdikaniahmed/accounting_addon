@@ -107,6 +107,10 @@
     { "from_directory": "View/Seller/account_groups_edit.blade.php",   "to_directory": "resources/views/addons/accountingSeller/account_groups_edit.blade.php" },
     { "from_directory": "View/Seller/account_groups_import.blade.php", "to_directory": "resources/views/addons/accountingSeller/account_groups_import.blade.php" },
 
+    { "from_directory": "View/Seller/chart_of_accounts.blade.php",       "to_directory": "resources/views/addons/accountingSeller/chart_of_accounts.blade.php" },
+    { "from_directory": "View/Seller/account_form.blade.php",            "to_directory": "resources/views/addons/accountingSeller/account_form.blade.php" },
+    { "from_directory": "View/Seller/chart_of_accounts_import.blade.php","to_directory": "resources/views/addons/accountingSeller/chart_of_accounts_import.blade.php" },
+
     { "from_directory": "routes/accounting-system.php", "to_directory": "routes/accounting-system.php" },
     { "from_directory": "routes/accounting-seller.php", "to_directory": "routes/accounting-seller.php" },
 
@@ -116,6 +120,8 @@
     { "from_directory": "database/AccountingPermissionSeeder.php", "to_directory": "Database/Seeders/Admin/Addon/AccountingPermissionSeeder.php" },
 
 
-    { "from_directory": "app/Controllers/Seller/AccountGroupController.php", "to_directory": "app/Http/Controllers/Seller/Addons/AccountGroupController.php" }
+    { "from_directory": "app/Controllers/Seller/AccountGroupController.php", "to_directory": "app/Http/Controllers/Seller/Addons/AccountGroupController.php" },
+    { "from_directory": "app/Controllers/Seller/ChartOfAccountController.php", "to_directory": "app/Http/Controllers/Seller/Addons/ChartOfAccountController.php" }
+
   ]
 }
