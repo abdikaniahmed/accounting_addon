@@ -67,6 +67,7 @@
 
     { "from_directory": "View/Admin/journal_form.blade.php",            "to_directory": "resources/views/addons/accounting/journal_form.blade.php" },
     { "from_directory": "View/Admin/journal_show.blade.php",            "to_directory": "resources/views/addons/accounting/journal_show.blade.php" },
+    { "from_directory": "View/Admin/view_journals.blade.php",            "to_directory": "resources/views/addons/accounting/view_journals.blade.php" },
     { "from_directory": "View/Admin/chart_of_accounts.blade.php",       "to_directory": "resources/views/addons/accounting/chart_of_accounts.blade.php" },
     { "from_directory": "View/Admin/account_form.blade.php",            "to_directory": "resources/views/addons/accounting/account_form.blade.php" },
     { "from_directory": "View/Admin/ledger_summary.blade.php",          "to_directory": "resources/views/addons/accounting/ledger_summary.blade.php" },
@@ -110,6 +111,9 @@
     { "from_directory": "View/Seller/chart_of_accounts.blade.php",       "to_directory": "resources/views/addons/accountingSeller/chart_of_accounts.blade.php" },
     { "from_directory": "View/Seller/account_form.blade.php",            "to_directory": "resources/views/addons/accountingSeller/account_form.blade.php" },
     { "from_directory": "View/Seller/chart_of_accounts_import.blade.php","to_directory": "resources/views/addons/accountingSeller/chart_of_accounts_import.blade.php" },
+    { "from_directory": "View/Seller/journal_form.blade.php",            "to_directory": "resources/views/addons/accountingSeller/journal_form.blade.php" },
+    { "from_directory": "View/Seller/journal_show.blade.php",            "to_directory": "resources/views/addons/accountingSeller/journal_show.blade.php" },
+    { "from_directory": "View/Seller/view_journals.blade.php",            "to_directory": "resources/views/addons/accountingSeller/view_journals.blade.php" },
 
     { "from_directory": "routes/accounting-system.php", "to_directory": "routes/accounting-system.php" },
     { "from_directory": "routes/accounting-seller.php", "to_directory": "routes/accounting-seller.php" },
@@ -121,7 +125,8 @@
 
 
     { "from_directory": "app/Controllers/Seller/AccountGroupController.php", "to_directory": "app/Http/Controllers/Seller/Addons/AccountGroupController.php" },
-    { "from_directory": "app/Controllers/Seller/ChartOfAccountController.php", "to_directory": "app/Http/Controllers/Seller/Addons/ChartOfAccountController.php" }
+    { "from_directory": "app/Controllers/Seller/ChartOfAccountController.php", "to_directory": "app/Http/Controllers/Seller/Addons/ChartOfAccountController.php" },
+    { "from_directory": "app/Controllers/Seller/JournalEntryController.php",     "to_directory": "app/Http/Controllers/Seller/Addons/JournalEntryController.php" }
 
   ]
 }

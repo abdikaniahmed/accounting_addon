@@ -13,5 +13,10 @@
         <li class="@yield('accounting_audit')">
             <a class="nav-link" href="{{ route('seller.audits.index') }}">{{ __('Audit Logs') }}</a>
         </li>
+        <li class="@yield('accounting_journals')">
+            <a class="nav-link" href="{{ route('seller.accounting.journals') }}">
+                {{ __('Journal Entries') }}
+            </a>
+        </li>
     </ul>
 </li>

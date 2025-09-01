@@ -7,15 +7,11 @@ use App\Models\Accounting\JournalItem;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Throwable;
 
 class JournalService
 {
-    /**
-     * Create a new journal entry with lines.
-     * $header: ['date','type','reference','description','journal_number?']
-     * $lines:  [['account_id'=>1,'debit'=>100,'credit'=>0,'memo'=>null], ...]
-     */
     public function create(array $header, array $lines): JournalEntry
     {
         $lines = $this->normalizeLines($lines);
@@ -25,9 +21,17 @@ class JournalService
             $entry = new JournalEntry();
             $entry->date           = $header['date'];
             $entry->type           = $header['type'] ?? 'general';
-            $entry->journal_number = $header['journal_number'] ?? $this->nextNumberSafely();
+            $entry->journal_number = $header['journal_number'] ?? JournalEntry::nextNumber();
             $entry->reference      = $header['reference'] ?? null;
             $entry->description    = $header['description'] ?? null;
+
+            // ⬅️ scope: stamp seller_id if current user is seller
+            if ($u = Sentinel::getUser()) {
+                if ($u->user_type === 'seller') {
+                    $entry->seller_id = (int) $u->id;
+                }
+            }
+
             $entry->save();
 
             foreach ($lines as $l) {
@@ -37,21 +41,18 @@ class JournalService
                     'type'             => ($l['debit'] ?? 0) > 0 ? 'debit' : 'credit',
                     'amount'           => ($l['debit'] ?? 0) > 0 ? $l['debit'] : $l['credit'],
                     'description'      => $l['memo'] ?? null,
+                    'seller_id'        => $entry->seller_id, // ⬅️ mirror
                 ]);
             }
 
             return $entry->fresh('journalItems.account');
         });
 
-        // keep index page in sync
-        Cache::forget('accounting.journal_entries');
+        $this->bustCaches();
 
         return $entry;
     }
 
-    /**
-     * Replace an entry's header/lines (idempotent update).
-     */
     public function replace(JournalEntry $entry, array $header, array $lines): JournalEntry
     {
         $lines = $this->normalizeLines($lines);
@@ -74,20 +75,18 @@ class JournalService
                     'type'             => ($l['debit'] ?? 0) > 0 ? 'debit' : 'credit',
                     'amount'           => ($l['debit'] ?? 0) > 0 ? $l['debit'] : $l['credit'],
                     'description'      => $l['memo'] ?? null,
+                    'seller_id'        => $entry->seller_id, // keep scope
                 ]);
             }
 
             return $entry->fresh('journalItems.account');
         });
 
-        Cache::forget('accounting.journal_entries');
+        $this->bustCaches();
 
         return $entry;
     }
 
-    /**
-     * Soft-delete an entry and its items.
-     */
     public function delete(JournalEntry $entry): void
     {
         DB::transaction(function () use ($entry) {
@@ -95,15 +94,9 @@ class JournalService
             $entry->delete();
         });
 
-        Cache::forget('accounting.journal_entries');
+        $this->bustCaches();
     }
 
-    /**
-     * Ensure lines are valid and usable:
-     * - drop empty/zero rows
-     * - no negatives
-     * - exactly one of debit/credit per line
-     */
     private function normalizeLines(array $lines): array
     {
         $out = [];
@@ -112,41 +105,27 @@ class JournalService
             $debit  = isset($l['debit'])  ? (float) $l['debit']  : 0.0;
             $credit = isset($l['credit']) ? (float) $l['credit'] : 0.0;
 
-            // skip empty rows
-            if ($debit == 0.0 && $credit == 0.0) {
-                continue;
-            }
-
+            if ($debit == 0.0 && $credit == 0.0) continue;
             if ($debit < 0 || $credit < 0) {
-                throw ValidationException::withMessages([
-                    "lines.$i" => ['Debit/Credit cannot be negative.'],
-                ]);
+                throw ValidationException::withMessages(["lines.$i" => ['Debit/Credit cannot be negative.']]);
             }
-
             if (($debit > 0 && $credit > 0) || ($debit == 0 && $credit == 0)) {
-                throw ValidationException::withMessages([
-                    "lines.$i" => ['Each line must have exactly one side (debit or credit).'],
-                ]);
+                throw ValidationException::withMessages(["lines.$i" => ['Each line must have exactly one side (debit or credit).']]);
             }
-
             if (empty($l['account_id'])) {
-                throw ValidationException::withMessages([
-                    "lines.$i.account_id" => ['Account is required.'],
-                ]);
+                throw ValidationException::withMessages(["lines.$i.account_id" => ['Account is required.']]);
             }
 
             $out[] = [
-                'account_id' => $l['account_id'],
+                'account_id' => (int) $l['account_id'],
                 'debit'      => $debit,
                 'credit'     => $credit,
-                'memo'       => $l['memo'] ?? null,
+                'memo'       => $l['memo'] ?? $l['description'] ?? null,
             ];
         }
 
         if (count($out) === 0) {
-            throw ValidationException::withMessages([
-                'lines' => ['At least one line is required.'],
-            ]);
+            throw ValidationException::withMessages(['lines' => ['At least one line is required.']]);
         }
 
         return $out;
@@ -154,42 +133,20 @@ class JournalService
 
     private function assertBalanced(array $lines): void
     {
-        $debit  = 0.0;
-        $credit = 0.0;
-
+        $debit = $credit = 0.0;
         foreach ($lines as $l) {
             $debit  += (float)($l['debit']  ?? 0);
             $credit += (float)($l['credit'] ?? 0);
         }
-
         if (round($debit, 2) !== round($credit, 2)) {
-            throw ValidationException::withMessages([
-                'lines' => ['Debits and credits must be equal.'],
-            ]);
+            throw ValidationException::withMessages(['lines' => ['Debits and credits must be equal.']]);
         }
     }
 
-    /**
-     * Generate a unique journal number with retries to avoid race conditions.
-     */
-    private function nextNumberSafely(int $maxAttempts = 5): string
+    private function bustCaches(): void
     {
-        $attempt = 0;
-
-        while (true) {
-            $attempt++;
-            $candidate = JournalEntry::nextNumber();
-
-            try {
-                // Probe uniqueness by reserving a number temporarily via insert+rollback is heavy.
-                // Instead, rely on UNIQUE index at DB level and retry on conflict when saving entry.
-                // We just return candidate here; the save() will retry in create() if needed.
-                return $candidate;
-            } catch (Throwable $e) {
-                if ($attempt >= $maxAttempts) {
-                    throw $e;
-                }
-            }
-        }
+        $sellerKey = optional(Sentinel::getUser())->id;
+        Cache::forget('accounting.journal_entries.global');
+        Cache::forget('accounting.journal_entries.seller.'.$sellerKey);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Addons;
+namespace App\Http\Controllers\Seller\Addons;
 
 use App\Http\Controllers\Controller;
 use App\Models\Accounting\JournalEntry;
@@ -9,33 +9,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Services\JournalService;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 
 class JournalEntryController extends Controller
 {
     public function index()
     {
-        // Admin sees GLOBAL entries only
-        $entries = Cache::remember('accounting.journal_entries.global', 30*60, function () {
-            return JournalEntry::onlyGlobal()
-                ->with('journalItems.account')
-                ->latest()
-                ->get();
+        $sellerId = (int) optional(Sentinel::getUser())->id;
+
+        $entries = Cache::remember('accounting.journal_entries.seller.'.$sellerId, 30*60, function () {
+            return JournalEntry::onlyOwn()->with('journalItems.account')->latest()->get();
         });
 
-        return view('addons.accounting.view_journals', compact('entries'));
+        return view('addons.accountingSeller.view_journals', compact('entries'));
     }
 
     public function show($id)
     {
-        $entry = JournalEntry::onlyGlobal()->with('journalItems.account')->findOrFail($id);
-        return view('addons.accounting.journal_show', compact('entry'));
+        $entry = JournalEntry::onlyOwn()->with('journalItems.account')->findOrFail($id);
+        return view('addons.accountingSeller.journal_show', compact('entry'));
     }
 
     public function create()
     {
-        // Admin can use GLOBAL accounts only
-        $accounts = Cache::rememberForever('accounting.accounts.dropdown.global', function () {
-            return Account::onlyGlobal()
+        $sellerId = (int) optional(Sentinel::getUser())->id;
+
+        $accounts = Cache::rememberForever('accounting.accounts.dropdown.seller.'.$sellerId, function () {
+            return Account::onlyOwn()
                 ->select('id', DB::raw("CONCAT(COALESCE(code,''), CASE WHEN code IS NULL OR code='' THEN '' ELSE ' - ' END, name) AS code_name"))
                 ->orderBy('name')
                 ->get();
@@ -43,7 +43,7 @@ class JournalEntryController extends Controller
 
         $journal_number = JournalEntry::nextNumber();
 
-        return view('addons.accounting.journal_form', compact('accounts', 'journal_number'));
+        return view('addons.accountingSeller.journal_form', compact('accounts', 'journal_number'));
     }
 
     public function store(Request $request, JournalService $journal)
@@ -59,7 +59,6 @@ class JournalEntryController extends Controller
             return back()->with('error', __('Debit and Credit must be equal.'))->withInput();
         }
 
-        // Force GLOBAL by clearing seller context (service stamps seller_id only for sellers)
         $entry = $journal->create(
             [
                 'date'           => $request->date,
@@ -71,22 +70,24 @@ class JournalEntryController extends Controller
             $lines
         );
 
-        return redirect()->route('admin.accounting.journals')
+        return redirect()->route('seller.accounting.journals')
             ->with('success', __('Journal entry created successfully.'));
     }
 
     public function edit($id)
     {
-        $entry = JournalEntry::onlyGlobal()->with('journalItems')->findOrFail($id);
+        $entry = JournalEntry::onlyOwn()->with('journalItems')->findOrFail($id);
 
-        $accounts = Cache::rememberForever('accounting.accounts.dropdown.global', function () {
-            return Account::onlyGlobal()
+        $sellerId = (int) optional(Sentinel::getUser())->id;
+
+        $accounts = Cache::rememberForever('accounting.accounts.dropdown.seller.'.$sellerId, function () {
+            return Account::onlyOwn()
                 ->select('id', DB::raw("CONCAT(COALESCE(code,''), CASE WHEN code IS NULL OR code='' THEN '' ELSE ' - ' END, name) AS code_name"))
                 ->orderBy('name')
                 ->get();
         });
 
-        return view('addons.accounting.journal_form', compact('entry', 'accounts'));
+        return view('addons.accountingSeller.journal_form', compact('entry', 'accounts'));
     }
 
     public function update(Request $request, $id, JournalService $journal)
@@ -97,7 +98,7 @@ class JournalEntryController extends Controller
             'accounts'       => 'required|array|min:1',
         ]);
 
-        $entry = JournalEntry::onlyGlobal()->findOrFail($id);
+        $entry = JournalEntry::onlyOwn()->findOrFail($id);
 
         [$lines, $balanced] = $this->buildLines($request->accounts);
         if (!$balanced) {
@@ -116,13 +117,13 @@ class JournalEntryController extends Controller
             $lines
         );
 
-        return redirect()->route('admin.accounting.journals')
+        return redirect()->route('seller.accounting.journals')
             ->with('success', __('Journal entry updated successfully.'));
     }
 
     public function destroy($id, JournalService $journal)
     {
-        $entry = JournalEntry::onlyGlobal()->findOrFail($id);
+        $entry = JournalEntry::onlyOwn()->findOrFail($id);
         $journal->delete($entry);
 
         return response()->json(['message' => __('Deleted successfully')]);
