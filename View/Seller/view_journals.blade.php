@@ -25,7 +25,7 @@ sidebar_active
 <section class="section">
     <div class="section-header">
         <h1>{{ __('Journal Entries') }}</h1>
-        <a href="{{ route('admin.accounting.journals.create') }}" class="btn btn-primary ml-auto">
+        <a href="{{ route('seller.accounting.journals.create') }}" class="btn btn-primary ml-auto">
             {{ __('Add New') }}
         </a>
     </div>
@@ -45,7 +45,7 @@ sidebar_active
                     </thead>
                     <tbody>
                         @foreach($entries as $entry)
-                        <tr data-href="{{ route('admin.accounting.journals.show', $entry->id) }}">
+                        <tr data-href="{{ route('seller.accounting.journals.show', $entry->id) }}">
                             <td>
                                 <span class="badge badge-success">{{ $entry->journal_number }}</span>
                             </td>
@@ -53,7 +53,7 @@ sidebar_active
                             <td>{{ $entry->description }}</td>
                             <td>{{ number_format($entry->journalItems->where('type','debit')->sum('amount'), 2) }}</td>
                             <td>
-                                <a href="{{ route('admin.accounting.journals.edit', $entry->id) }}"
+                                <a href="{{ route('seller.accounting.journals.edit', $entry->id) }}"
                                     class="btn btn-sm btn-primary" data-toggle="tooltip" title="{{ __('Edit') }}">
                                     <i class="bx bx-edit"></i>
                                 </a>

@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($entry->items as $i => $item)
+                    @foreach($entry->journalItems as $i => $item)
                     <tr>
                         <td>{{ $i + 1 }}</td>
                         <td>{{ $item->account->code }} - {{ $item->account->name }}</td>
@@ -41,8 +41,8 @@
                 <tfoot>
                     <tr>
                         <th colspan="3">{{ __('Total') }}</th>
-                        <th>{{ number_format($entry->items->where('type', 'debit')->sum('amount'), 2) }}</th>
-                        <th>{{ number_format($entry->items->where('type', 'credit')->sum('amount'), 2) }}</th>
+                        <th>{{ number_format($entry->journalItems->where('type','debit')->sum('amount'), 2) }}</th>
+                        <th>{{ number_format($entry->journalItems->where('type','credit')->sum('amount'), 2) }}</th>
                     </tr>
                 </tfoot>
             </table>

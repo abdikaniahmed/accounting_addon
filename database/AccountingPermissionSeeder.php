@@ -62,9 +62,11 @@ class AccountingPermissionSeeder extends Seeder
                 'asset_update'         => 'accounting_asset_update',
                 'asset_delete'         => 'accounting_asset_delete',
                 'asset_depr_post'      => 'accounting_asset_depr_post',
-                'audit_view'      => 'audit_read',
-                'audit_show_detail'      => 'audit_read',
 
+            ],
+            'Auding' => [
+                'audit_view'      => 'audit_read',
+                'audit_show_detail'  => 'audit_read',
             ],
         ];
 
