@@ -10,13 +10,19 @@
         <li class="@yield('accounting_coa')">
             <a class="nav-link" href="{{ route('seller.accounting.coa.index') }}">{{ __('Chart of Accounts') }}</a>
         </li>
-        <li class="@yield('accounting_audit')">
-            <a class="nav-link" href="{{ route('seller.audits.index') }}">{{ __('Audit Logs') }}</a>
-        </li>
+
         <li class="@yield('accounting_journals')">
             <a class="nav-link" href="{{ route('seller.accounting.journals') }}">
                 {{ __('Journal Entries') }}
             </a>
+        </li>
+        <li class="@yield('accounting_quick_expenses')">
+            <a class="nav-link"
+                href="{{ route('seller.accounting.quick_expenses.index) }}">{{ __('Quick Expense') }}</a>
+        </li>
+
+        <li class="@yield('accounting_audit')">
+            <a class="nav-link" href="{{ route('seller.audits.index') }}">{{ __('Audit Logs') }}</a>
         </li>
     </ul>
 </li>

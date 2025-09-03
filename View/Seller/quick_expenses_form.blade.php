@@ -1,18 +1,15 @@
-@extends('admin.partials.master')
+@extends('admin.partials.master') {{-- or your seller master --}}
 
 @section('title')
 {{ $expense->id ? __('Edit Quick Expense') : __('Add Quick Expense') }}
 @endsection
-
-@section('accounting_active') sidebar_active @endsection
-@section('quick_expenses') active @endsection
 
 @section('main-content')
 <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">
         {{ $expense->id ? __('Edit Quick Expense') : __('Add Quick Expense') }}
     </h5>
-    <a href="{{ route('admin.accounting.quick_expenses.index') }}" class="btn btn-secondary">
+    <a href="{{ route('seller.accounting.quick_expenses.index') }}" class="btn btn-secondary">
         <i class="las la-arrow-left"></i> {{ __('Back to List') }}
     </a>
 </div>
@@ -20,7 +17,7 @@
 <div class="card">
     <div class="card-body">
         <form
-            action="{{ $expense->id ? route('admin.accounting.quick_expenses.update', $expense->id) : route('admin.accounting.quick_expenses.store') }}"
+            action="{{ $expense->id ? route('seller.accounting.quick_expenses.update', $expense->id) : route('seller.accounting.quick_expenses.store') }}"
             method="POST" enctype="multipart/form-data">
             @csrf
             @if($expense->id) @method('PUT') @endif
@@ -34,8 +31,8 @@
 
                 <div class="form-group col-md-6">
                     <label>{{ __('Expense Account') }} <span class="text-danger">*</span></label>
-                    <select name="account_id" class="aiz-selectpicker w-100" data-live-search="true" data-size="7"
-                        title="{{ __('Select Expense Account') }}" required>
+                    <select name="account_id" class="form-control account-select select2"
+                        data-placeholder="{{ __('Select Expense Account') }}" required>
                         <option value="">{{ __('Select Expense Account') }}</option>
                         @foreach($accounts as $id => $name)
                         <option value="{{ $id }}"
@@ -49,9 +46,8 @@
 
             <div class="form-group">
                 <label>{{ __('Payment Account') }} <span class="text-danger">*</span></label>
-                <select name="payment_account_id" class="aiz-selectpicker w-100" data-live-search="true" data-size="7"
-                    title="{{ __('Select Payment Account') }}" required>
-
+                <select name="payment_account_id" class="form-control account-select select2"
+                    data-placeholder="{{ __('Select Payment Account') }}" required>
                     <option value="">{{ __('Select Payment Account') }}</option>
                     @foreach($paymentAccounts as $id => $name)
                     <option value="{{ $id }}"
@@ -106,41 +102,25 @@
 </div>
 @endsection
 
-@push('script')
+@push('page-script')
 <script>
-(function() {
-    var $ = window.jQuery || window.$;
-    if (!$) return;
-    var $els = $('.aiz-selectpicker');
-
-    // If bootstrap-select exists, render/refresh
-    if ($.fn.selectpicker) {
-        $els.each(function() {
-            var $el = $(this);
-            $el.attr('data-live-search', 'true'); // ensure live search on
-            try {
-                $el.selectpicker('render');
-            } catch (e) {
-                $el.selectpicker('refresh');
+document.addEventListener('DOMContentLoaded', function() {
+    const initSelect2 = (root) => {
+        if (!window.jQuery || !jQuery.fn.select2) return; // Select2 not loaded
+        const els = (root || document).querySelectorAll('.account-select.select2');
+        els.forEach(function(el) {
+            const $el = jQuery(el);
+            if (!$el.hasClass('select2-hidden-accessible')) {
+                $el.select2({
+                    placeholder: el.dataset.placeholder || '',
+                    allowClear: true,
+                    width: '100%'
+                });
             }
         });
-        return;
-    }
+    };
 
-    // Fallback to Select2 if present
-    if ($.fn.select2) {
-        $els.each(function() {
-            var $el = $(this);
-            var ph = $el.attr('title') || '';
-            $el.select2({
-                width: '100%',
-                placeholder: ph,
-                allowClear: true
-            });
-        });
-    }
-})();
+    initSelect2(); // initial
+});
 </script>
 @endpush
-
-@toastr_render

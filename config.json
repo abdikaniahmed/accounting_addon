@@ -1,7 +1,7 @@
 {
   "name": "Accounting System",
   "addon_identifier": "accounting_addon",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "required_cms_version": "192",
   "addon_banner": "images/addons/accounting.png",
 
@@ -114,6 +114,9 @@
     { "from_directory": "View/Seller/journal_form.blade.php",            "to_directory": "resources/views/addons/accountingSeller/journal_form.blade.php" },
     { "from_directory": "View/Seller/journal_show.blade.php",            "to_directory": "resources/views/addons/accountingSeller/journal_show.blade.php" },
     { "from_directory": "View/Seller/view_journals.blade.php",            "to_directory": "resources/views/addons/accountingSeller/view_journals.blade.php" },
+    { "from_directory": "View/Seller/quick_expenses_form.blade.php",     "to_directory": "resources/views/addons/accountingSeller/quick_expenses_form.blade.php" },
+    { "from_directory": "View/Seller/quick_expenses_index.blade.php",    "to_directory": "resources/views/addons/accountingSeller/quick_expenses_index.blade.php" },
+    
 
     { "from_directory": "routes/accounting-system.php", "to_directory": "routes/accounting-system.php" },
     { "from_directory": "routes/accounting-seller.php", "to_directory": "routes/accounting-seller.php" },
@@ -126,7 +129,9 @@
 
     { "from_directory": "app/Controllers/Seller/AccountGroupController.php", "to_directory": "app/Http/Controllers/Seller/Addons/AccountGroupController.php" },
     { "from_directory": "app/Controllers/Seller/ChartOfAccountController.php", "to_directory": "app/Http/Controllers/Seller/Addons/ChartOfAccountController.php" },
-    { "from_directory": "app/Controllers/Seller/JournalEntryController.php",     "to_directory": "app/Http/Controllers/Seller/Addons/JournalEntryController.php" }
+    { "from_directory": "app/Controllers/Seller/JournalEntryController.php",     "to_directory": "app/Http/Controllers/Seller/Addons/JournalEntryController.php" },
+    { "from_directory": "app/Controllers/Seller/QuickExpensesController.php",    "to_directory": "app/Http/Controllers/Seller/Addons/QuickExpensesController.php" }
+
 
   ]
 }

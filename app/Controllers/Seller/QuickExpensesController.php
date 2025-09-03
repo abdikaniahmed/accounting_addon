@@ -1,73 +1,46 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Addons;
+namespace App\Http\Controllers\Seller\Addons;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Accounting\QuickExpense;
 use App\Models\Accounting\Account;
 use App\Services\JournalService;
-use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\DB;
-use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 
 class QuickExpensesController extends Controller
 {
-    /** Simple role check */
-    private function isSeller(): bool
-    {
-        $u = Sentinel::getUser();
-        return $u && ($u->user_type ?? null) === 'seller';
-    }
-
-    /** INDEX: Admin → onlyGlobal(); Seller → onlyOwn() */
+    /** List: only rows for the logged-in seller */
     public function index(Request $request)
     {
-        $builder = QuickExpense::query()
-            ->with(['expenseAccount','paymentAccount','journalEntry'])
+        $expenses = QuickExpense::onlyOwn()
+            ->with(['expenseAccount', 'paymentAccount', 'journalEntry'])
             ->betweenDates($request->get('start'), $request->get('end'))
             ->search($request->get('q'))
-            ->latest();
+            ->latest()
+            ->get();
 
-        $expenses = $this->isSeller()
-            ? $builder->onlyOwn()->get()
-            : $builder->onlyGlobal()->get();
-
-        return view(
-            $this->isSeller()
-                ? 'addons.accountingSeller.quick_expenses_index'
-                : 'addons.accounting.quick_expenses_index',
-            compact('expenses')
-        );
+        return view('addons.accountingSeller.quick_expenses_index', compact('expenses'));
     }
 
-    /** CREATE: Admin → Account::onlyGlobal(); Seller → Account::onlyOwn() */
+    /** Create form: seller can pick from their own accounts only */
     public function create()
     {
-        $accountsQuery = Account::query()->where('type','expense')->orderBy('name');
-        $payQuery      = Account::query()->where('is_money', true)->orderBy('name');
+        $accounts = Account::onlyOwn()
+            ->where('type', 'expense')->orderBy('name')->pluck('name', 'id');
 
-        if ($this->isSeller()) {
-            $accounts        = $accountsQuery->onlyOwn()->pluck('name','id');
-            $paymentAccounts = $payQuery->onlyOwn()->pluck('name','id');
-        } else {
-            $accounts        = $accountsQuery->onlyGlobal()->pluck('name','id');
-            $paymentAccounts = $payQuery->onlyGlobal()->pluck('name','id');
-        }
+        $paymentAccounts = Account::onlyOwn()
+            ->where('is_money', true)->orderBy('name')->pluck('name', 'id');
 
-        $view = $this->isSeller()
-            ? 'addons.accountingSeller.quick_expenses_form'
-            : 'addons.accounting.quick_expenses_form';
-
-        return view($view, [
+        return view('addons.accountingSeller.quick_expenses_form', [
             'expense'         => new QuickExpense(['id' => null]),
             'accounts'        => $accounts,
             'paymentAccounts' => $paymentAccounts,
         ]);
     }
 
-    /** STORE: JournalService already stamps seller scope for sellers.
-     *  For admins, leave seller_id = NULL (GLOBAL). Do NOT force NULL for sellers. */
+    /** Store: auto-stamps seller_id via model boot (or you can set it explicitly) */
     public function store(Request $request, JournalService $journal)
     {
         $request->validate([
@@ -85,11 +58,6 @@ class QuickExpensesController extends Controller
 
         if ($request->hasFile('bill_file')) {
             $data['bill_file'] = $request->file('bill_file')->store('uploads/bills');
-        }
-
-        // ✅ For admins, ensure GLOBAL row; for sellers, let the model stamp seller_id.
-        if (!$this->isSeller()) {
-            $data['seller_id'] = null;
         }
 
         DB::beginTransaction();
@@ -114,54 +82,30 @@ class QuickExpensesController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            $msg = __('Could not save expense: ').$e->getMessage();
-            if ($this->isSeller()) {
-                return back()->with('error', $msg)->withInput();
-            }
-            Toastr::error($msg);
-            return back()->withInput();
+            return back()->with('error', __('Could not save expense: ').$e->getMessage())->withInput();
         }
 
-        $redirect = $this->isSeller()
-            ? route('seller.accounting.quick_expenses.index')
-            : route('admin.accounting.quick_expenses.index');
-
-        if ($this->isSeller()) {
-            return redirect($redirect)->with('success', __('Expense recorded successfully.'));
-        }
-        Toastr::success(__('Expense recorded successfully.'));
-        return redirect($redirect);
+        return redirect()->route('seller.accounting.quick_expenses.index')
+            ->with('success', __('Expense recorded successfully.'));
     }
 
-    /** EDIT: scope rows + account lists correctly, switch view */
     public function edit($id)
     {
-        $expense = $this->isSeller()
-            ? QuickExpense::onlyOwn()->findOrFail($id)
-            : QuickExpense::onlyGlobal()->findOrFail($id);
+        $expense = QuickExpense::onlyOwn()->findOrFail($id);
 
-        $accountsQuery = Account::query()->where('type','expense')->orderBy('name');
-        $payQuery      = Account::query()->where('is_money', true)->orderBy('name');
+        $accounts = Account::onlyOwn()
+            ->where('type', 'expense')->orderBy('name')->pluck('name', 'id');
 
-        if ($this->isSeller()) {
-            $accounts        = $accountsQuery->onlyOwn()->pluck('name','id');
-            $paymentAccounts = $payQuery->onlyOwn()->pluck('name','id');
-            $view = 'addons.accountingSeller.quick_expenses_form';
-        } else {
-            $accounts        = $accountsQuery->onlyGlobal()->pluck('name','id');
-            $paymentAccounts = $payQuery->onlyGlobal()->pluck('name','id');
-            $view = 'addons.accounting.quick_expenses_form';
-        }
+        $paymentAccounts = Account::onlyOwn()
+            ->where('is_money', true)->orderBy('name')->pluck('name', 'id');
 
-        return view($view, compact('expense','accounts','paymentAccounts'));
+        return view('addons.accountingSeller.quick_expenses_form', compact('expense','accounts','paymentAccounts'));
     }
 
-    /** UPDATE: scope row, then replace posting */
+    /** Update: replace posting if needed */
     public function update(Request $request, $id, JournalService $journal)
     {
-        $expense = $this->isSeller()
-            ? QuickExpense::onlyOwn()->findOrFail($id)
-            : QuickExpense::onlyGlobal()->findOrFail($id);
+        $expense = QuickExpense::onlyOwn()->findOrFail($id);
 
         $request->validate([
             'account_id'          => 'required|exists:acc_accounts,id',
@@ -216,31 +160,16 @@ class QuickExpensesController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            $msg = __('Could not update expense: ').$e->getMessage();
-            if ($this->isSeller()) {
-                return back()->with('error', $msg)->withInput();
-            }
-            Toastr::error($msg);
-            return back()->withInput();
+            return back()->with('error', __('Could not update expense: ').$e->getMessage())->withInput();
         }
 
-        $redirect = $this->isSeller()
-            ? route('seller.accounting.quick_expenses.index')
-            : route('admin.accounting.quick_expenses.index');
-
-        if ($this->isSeller()) {
-            return redirect($redirect)->with('success', __('Expense updated successfully.'));
-        }
-        Toastr::success(__('Expense updated successfully.'));
-        return redirect($redirect);
+        return redirect()->route('seller.accounting.quick_expenses.index')
+            ->with('success', __('Expense updated successfully.'));
     }
 
-    /** DESTROY: scope row, then delete + posting */
     public function destroy($id, JournalService $journal)
     {
-        $expense = $this->isSeller()
-            ? QuickExpense::onlyOwn()->findOrFail($id)
-            : QuickExpense::onlyGlobal()->findOrFail($id);
+        $expense = QuickExpense::onlyOwn()->findOrFail($id);
 
         DB::transaction(function () use ($expense, $journal) {
             if ($expense->journal_entry_id && $expense->journalEntry) {

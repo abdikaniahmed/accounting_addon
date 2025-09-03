@@ -6,6 +6,7 @@ use App\Http\Controllers\Seller\Addons\AccountGroupController as SellerAccountGr
 use App\Http\Controllers\Seller\Addons\SellerAuditController as SellerAuditController;
 use App\Http\Controllers\Seller\Addons\ChartOfAccountController as SellerCoa;
 use App\Http\Controllers\Seller\Addons\JournalEntryController as SellerJournalController;
+use App\Http\Controllers\Admin\Addons\QuickExpensesController as SellerQuickExpensesController;
 
 Route::middleware(['XSS','isInstalled'])->group(function () {
     Route::group([
@@ -128,6 +129,32 @@ Route::middleware(['XSS','isInstalled'])->group(function () {
             Route::get('/audits/{audit}', [SellerAuditController::class, 'show'])
                 ->name('seller.audits.show')
                 ->middleware('PermissionCheck:audit_view');
-        });
+            
+                    
+            /** ----------------- Quick Expenses (Seller) ------------------ **/
+            Route::get('/quick-expenses', [SellerQuickExpensesController::class, 'index'])
+                ->name('quick_expenses.index')
+                ->middleware('PermissionCheck:accounting_quick_expense_read');
+
+            Route::get('/quick-expenses/create', [SellerQuickExpensesController::class, 'create'])
+                ->name('quick_expenses.create')
+                ->middleware('PermissionCheck:accounting_quick_expense_create');
+
+            Route::post('/quick-expenses', [SellerQuickExpensesController::class, 'store'])
+                ->name('quick_expenses.store')
+                ->middleware('PermissionCheck:accounting_quick_expense_create');
+
+            Route::get('/quick-expenses/{id}/edit', [SellerQuickExpensesController::class, 'edit'])
+                ->name('quick_expenses.edit')
+                ->middleware('PermissionCheck:accounting_quick_expense_update');
+
+            Route::put('/quick-expenses/{id}', [SellerQuickExpensesController::class, 'update'])
+                ->name('quick_expenses.update')
+                ->middleware('PermissionCheck:accounting_quick_expense_update');
+
+            Route::delete('/quick-expenses/{id}', [SellerQuickExpensesController::class, 'destroy'])
+                ->name('quick_expenses.destroy')
+                ->middleware('PermissionCheck:accounting_quick_expense_delete');
+                });
     });
 });

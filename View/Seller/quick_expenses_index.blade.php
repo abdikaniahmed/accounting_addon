@@ -1,19 +1,17 @@
-@extends('admin.partials.master')
+@extends('admin.partials.master') {{-- or your seller master --}}
 
-@section('title') {{ __('Quick Expenses') }} @endsection
-@section('accounting_active') sidebar_active @endsection
-@section('quick_expenses') active @endsection
+@section('title', __('Quick Expenses'))
 
 @section('main-content')
 <div class="aiz-titlebar d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">{{ __('Quick Expenses') }}</h5>
-    <a href="{{ route('admin.accounting.quick_expenses.create') }}" class="btn btn-primary">
+    <a href="{{ route('seller.accounting.quick_expenses.create') }}" class="btn btn-primary">
         <i class="las la-plus"></i> {{ __('Add New Expense') }}
     </a>
 </div>
 
 {{-- Filters --}}
-<form method="GET" action="{{ route('admin.accounting.quick_expenses.index') }}" class="card mb-3">
+<form method="GET" action="{{ route('seller.accounting.quick_expenses.index') }}" class="card mb-3">
     <div class="card-body">
         <div class="row g-2">
             <div class="col-md-4">
@@ -21,12 +19,10 @@
                     placeholder="{{ __('Search (vendor, ref, description)') }}">
             </div>
             <div class="col-md-3">
-                <input type="date" name="start" class="form-control" value="{{ request('start') }}"
-                    placeholder="{{ __('Start date') }}">
+                <input type="date" name="start" class="form-control" value="{{ request('start') }}">
             </div>
             <div class="col-md-3">
-                <input type="date" name="end" class="form-control" value="{{ request('end') }}"
-                    placeholder="{{ __('End date') }}">
+                <input type="date" name="end" class="form-control" value="{{ request('end') }}">
             </div>
             <div class="col-md-2 text-right">
                 <button class="btn btn-outline-secondary w-100" type="submit"><i class="las la-search"></i>
@@ -69,13 +65,13 @@
                             @endif
                         </td>
                         <td class="text-right">
-                            <a href="{{ route('admin.accounting.quick_expenses.edit', $expense->id) }}"
+                            <a href="{{ route('seller.accounting.quick_expenses.edit', $expense->id) }}"
                                 class="btn btn-sm btn-outline-info" title="{{ __('Edit') }}">
-                                <i class="las la-edit"></i>
+                                <i class="bx bx-edit"></i>
                             </a>
-                            <button onclick="delete_row('accounting/quick-expenses/', {{ $expense->id }})"
+                            <button onclick="delete_row('seller/accounting/quick-expenses/', {{ $expense->id }})"
                                 class="btn btn-sm btn-outline-danger" title="{{ __('Delete') }}">
-                                <i class="las la-trash"></i>
+                                <i class="bx bx-trash"></i>
                             </button>
                         </td>
                     </tr>
